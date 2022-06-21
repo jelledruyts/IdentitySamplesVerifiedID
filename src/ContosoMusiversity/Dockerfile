@@ -5,7 +5,7 @@ ARG source_version=local
 WORKDIR /build
 COPY . .
 RUN dotnet restore
-RUN dotnet publish -c Release -o /app /p:Version=${app_version} /p:SourceRevisionId=${source_version}
+RUN dotnet publish -c Release -o /app /p:Version=${app_version} /p:SourceRevisionId=${source_version} ./ContosoMusiversity/ContosoMusiversity.csproj
 # Stage 2
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 ENV ASPNETCORE_URLS=http://+:80
