@@ -24,7 +24,7 @@ jobs:
     - name: Build Containers
       run: |
         echo Building app version ${{ env.AppVersion }}
-        docker build --no-cache --build-arg app_version=${{ env.AppVersion }} --build-arg source_version=$GITHUB_SHA -t jelledruyts/contosomusiversity:latest -f ./src/ContosoMusiversity/Dockerfile ./src/ContosoMusiversity
+        docker build --no-cache --build-arg app_version=${{ env.AppVersion }} --build-arg source_version=$GITHUB_SHA -t jelledruyts/contosomusiversity:latest -f ./src/ContosoMusiversity/Dockerfile ./src
     - name: Push Containers to GitHub Packages
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
