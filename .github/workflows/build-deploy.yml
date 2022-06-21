@@ -12,24 +12,26 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  AppVersion: $(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER
-
 jobs:
-  build-deploy-linux:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Check Out Repo
       uses: actions/checkout@v2
+    - name: Set variables
+      run: |
+        echo "AppVersion=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
     - name: Build Containers
-      run: docker build --no-cache --build-arg app_version=$AppVersion --build-arg source_version=$GITHUB_SHA -t jelledruyts/contosomusiversity:latest -f ./src/ContosoMusiversity/Dockerfile ./src/ContosoMusiversity
+      run: |
+        echo Building app version ${{ env.AppVersion }}
+        docker build --no-cache --build-arg app_version=${{ env.AppVersion }} --build-arg source_version=$GITHUB_SHA -t jelledruyts/contosomusiversity:latest -f ./src/ContosoMusiversity/Dockerfile ./src/ContosoMusiversity
     - name: Push Containers to GitHub Packages
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         docker tag jelledruyts/contosomusiversity:latest ghcr.io/jelledruyts/contosomusiversity:latest
-        docker tag jelledruyts/contosomusiversity:$AppVersion ghcr.io/jelledruyts/contosomusiversity:$AppVersion
+        docker tag jelledruyts/contosomusiversity:${{ env.AppVersion }} ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
         docker push ghcr.io/jelledruyts/contosomusiversity:latest
-        docker push ghcr.io/jelledruyts/contosomusiversity:$AppVersion
+        docker push ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
     - name: Azure Login
       uses: Azure/login@v1
       with:
@@ -41,4 +43,4 @@ jobs:
       with:
         inlineScript: |
           az config set extension.use_dynamic_install=yes_without_prompt
-          az containerapp update -n containerapp-app-kontoso -g identitysamplesverifiedid -i jelledruyts/contosomusiversity:$AppVersion --registry-login-server ghcr.io --debug
+          az containerapp update -n containerapp-app-kontoso -g identitysamplesverifiedid -i jelledruyts/contosomusiversity:${{ env.AppVersion }} --registry-login-server ghcr.io --debug
