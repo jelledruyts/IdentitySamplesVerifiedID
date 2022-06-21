@@ -29,7 +29,7 @@ jobs:
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         docker tag jelledruyts/contosomusiversity:latest ghcr.io/jelledruyts/contosomusiversity:latest
-        docker tag jelledruyts/contosomusiversity:${{ env.AppVersion }} ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
+        docker tag jelledruyts/contosomusiversity:latest ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
         docker push ghcr.io/jelledruyts/contosomusiversity:latest
         docker push ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
     - name: Azure Login
