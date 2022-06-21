@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-ContosoMusiversity-b6509464-7437-4a44-bf15-649d8b9047a7</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../MicrosoftEntra.VerifiedId.Client/MicrosoftEntra.VerifiedId.Client.csproj" />
+  </ItemGroup>
+
+</Project>
