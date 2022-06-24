@@ -4,7 +4,6 @@ using MicrosoftEntra.VerifiedId.Client;
 namespace ContosoMusiversity.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
 public class IssuerController : ControllerBase
 {
     private readonly ILogger<IssuerController> logger;
@@ -14,8 +13,21 @@ public class IssuerController : ControllerBase
         this.logger = logger;
     }
 
-    [HttpGet]
-    public string Get()
+    // [Authorize] // TODO: Ensure user is logged in
+    [HttpPost("api/issuer/issuance-request")]
+    public string IssuanceRequest()
+    {
+        return "ok";
+    }
+
+    [HttpPost("api/issuer/issuance-callback")]
+    public string IssuanceCallback()
+    {
+        return "ok";
+    }
+
+    [HttpPost("api/issuer/issuance-response")]
+    public string IssuanceResponse()
     {
         return "ok";
     }

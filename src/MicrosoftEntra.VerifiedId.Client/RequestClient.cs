@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MicrosoftEntra.VerifiedId.Client
@@ -9,11 +11,16 @@ namespace MicrosoftEntra.VerifiedId.Client
     {
         private readonly RequestClientOptions options;
         private readonly HttpClient httpClient;
+        private readonly JsonSerializerOptions jsonSerializerOptions;
 
         public RequestClient(RequestClientOptions options, HttpClient httpClient)
         {
             this.options = options;
             this.httpClient = httpClient;
+            this.jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
         }
 
         public Task RequestIssuance(string callbackUrl, string callbackState)
@@ -21,7 +28,7 @@ namespace MicrosoftEntra.VerifiedId.Client
             if (this.options.Authority == null) throw new ArgumentNullException(nameof(this.options.Authority));
             var request = new IssuanceRequest
             {
-                IncludeQRCode = false,
+                IncludeQRCode = true,
                 Callback = new Callback
                 {
                     Url = callbackUrl,
@@ -51,9 +58,10 @@ namespace MicrosoftEntra.VerifiedId.Client
             return RequestIssuanceAsync(request);
         }
 
-        public async Task RequestIssuanceAsync(IssuanceRequest request)
+        public Task RequestIssuanceAsync(IssuanceRequest request)
         {
             var url = GetApiUrl("verifiablecredentials/request");
+            return this.httpClient.PostAsJsonAsync(url, request);
         }
 
         private string GetApiUrl(string api)

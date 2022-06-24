@@ -17,9 +17,9 @@ public class WellKnownDidConfigurationController : ControllerBase
         }
     }
 
-    [Route(".well-known/did-configuration.json")]
-    public DidConfiguration GetDidConfiguration()
-    {
-        return this.didConfiguration;
-    }
+    // [Route(".well-known/did-configuration.json")]
+    // public DidConfiguration GetDidConfiguration()
+    // {
+    //     return this.didConfiguration;
+    // }
 }

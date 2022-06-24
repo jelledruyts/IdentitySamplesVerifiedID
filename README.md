@@ -9,4 +9,4 @@ Demonstrates a scenario of a university web app issuing a Microsoft Entra Verifi
   - Set up the Verifiable Credentials service
   - Create the "Contoso Musiversity" app registration
     - Make sure to grant it the "VerifiableCredential.Create.All" permission on the "Verifiable Credentials Service Request" Service Principal (for Application ID "3db474b9-6a0c-4840-96ac-1fceb342124f") and grant admin consent
-- For domain verification, copy the "did-configuration.json" contents into the [src/ContosoMusiversity/wwwroot/.well-known/did-configuration.json](src/ContosoMusiversity/wwwroot/.well-known/did-configuration.json) file.
+- For domain verification, set the `MicrosoftEntra:DomainLinkageCredentials:0` app setting to the JWT
