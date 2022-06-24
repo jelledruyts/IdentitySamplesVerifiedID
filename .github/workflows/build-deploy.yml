@@ -44,4 +44,4 @@ jobs:
       with:
         inlineScript: |
           az config set extension.use_dynamic_install=yes_without_prompt
-          az containerapp update -n containerapp-app-kontoso -g identitysamplesverifiedid -i ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }} --debug
+          az containerapp update -n containerapp-app-kontoso -g identitysamplesverifiedid -i ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
