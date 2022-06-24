@@ -21,6 +21,6 @@ public class WellKnownController : ControllerBase
     [Route(".well-known/did-configuration.json")]
     public string? GetDidConfiguration()
     {
-        return this.options.WellKnownDidJsonConfigurationContents;
+        return this.options.WellKnownDidConfigurationJsonContents;
     }
 }
