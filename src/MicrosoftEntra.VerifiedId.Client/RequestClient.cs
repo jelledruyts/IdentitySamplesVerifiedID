@@ -47,14 +47,14 @@ namespace MicrosoftEntra.VerifiedId.Client
                     Claims = null // TODO
                 }
             };
-            // if (this.options.MinimumPinLength > 0) // TODO
-            // {
-            //     request.Issuance.Pin = new Pin
-            //     {
-            //         Length = this.options.MinimumPinLength,
-            //         Value = "" // TODO
-            //     };
-            // }
+            if (this.options.MinimumPinLength.HasValue && this.options.MinimumPinLength.Value > 0)
+            {
+                request.Issuance.Pin = new Pin
+                {
+                    Length = this.options.MinimumPinLength.Value,
+                    Value = "" // TODO
+                };
+            }
             return RequestIssuanceAsync(request);
         }
 

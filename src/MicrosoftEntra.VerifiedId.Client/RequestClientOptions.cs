@@ -8,5 +8,6 @@ namespace MicrosoftEntra.VerifiedId
         public string? WellKnownDidConfigurationJsonContents { get; set; }
         public string? TenantId { get; set; }
         public string? ClientName { get; set; }
+        public int? MinimumPinLength { get; set; }
     }
 }
