@@ -13,7 +13,7 @@
     },
     "consent": {
       "title": "Do you want to get your verified credential?",
-      "instructions": "Sign in with your account to get your card."
+      "instructions": "Please accept your Verified Student card."
     },
     "claims": [
       {

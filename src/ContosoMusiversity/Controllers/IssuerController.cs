@@ -1,3 +1,4 @@
+using ContosoMusiversity.Models;
 using Microsoft.AspNetCore.Mvc;
 using MicrosoftEntra.VerifiedId.Client;
 
@@ -7,9 +8,9 @@ namespace ContosoMusiversity.Controllers;
 public class IssuerController : ControllerBase
 {
     private readonly ILogger<IssuerController> logger;
-    private readonly RequestClient requestClient;
+    private readonly IssuanceRequestClient requestClient;
 
-    public IssuerController(ILogger<IssuerController> logger, RequestClient requestClient)
+    public IssuerController(ILogger<IssuerController> logger, IssuanceRequestClient requestClient)
     {
         this.logger = logger;
         this.requestClient = requestClient;
@@ -17,11 +18,14 @@ public class IssuerController : ControllerBase
 
     // [Authorize] // TODO: Ensure user is logged in
     [HttpPost("api/issuer/issuance-request")]
-    public async Task<string> IssuanceRequest()
+    public async Task<IssuanceApiResponse> IssuanceRequest()
     {
         var absoluteCallbackUrl = Url.Action(nameof(IssuanceCallback), null, null, "https")!;
-        await this.requestClient.RequestIssuanceAsync("Verified Student", absoluteCallbackUrl, "TODO");
-        return "ok";
+        var claims = new Dictionary<string, string>();
+        claims.Add("given_name", "John");
+        claims.Add("family_name", "Doe");
+        var context = await this.requestClient.RequestIssuanceAsync("Verified Student", claims, absoluteCallbackUrl, "TODO");
+        return new IssuanceApiResponse(context);
     }
 
     [HttpPost("api/issuer/issuance-callback")]

@@ -1,32 +1,35 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using MicrosoftEntra.VerifiedId.Client.Models;
 
 namespace MicrosoftEntra.VerifiedId.Client;
 
-// TODO: Create IRequestClient for cleaner DI?
-public class RequestClient
+// TODO: Create IIssuanceRequestClient for cleaner DI?
+public class IssuanceRequestClient
 {
     private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
     {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
     private static string[] VerifiableCredentialsServiceRequestScopes = new[] { "3db474b9-6a0c-4840-96ac-1fceb342124f/.default" }; // This is the fixed scope which is required for the "Verifiable Credentials Service Request" app permission.
 
     private ILogger logger;
-    private readonly RequestClientOptions options;
+    private readonly IssuanceRequestClientOptions options;
     private readonly HttpClient httpClient;
     private readonly IConfidentialClientApplication confidentialClientApplication;
 
-    public RequestClient(ILogger<RequestClient> logger, RequestClientOptions options, HttpClient httpClient, IConfidentialClientApplication confidentialClientApplication)
+    public IssuanceRequestClient(ILogger<IssuanceRequestClient> logger, IssuanceRequestClientOptions options, HttpClient httpClient, IConfidentialClientApplication confidentialClientApplication)
     {
         this.logger = logger;
         this.options = options;
@@ -34,7 +37,14 @@ public class RequestClient
         this.confidentialClientApplication = confidentialClientApplication;
     }
 
-    public IssuanceRequest GetIssuanceRequest(string credentialType, string callbackUrl, string callbackState)
+    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState)
+    {
+        var context = GetIssuanceRequest(credentialType, claims, callbackUrl, callbackState);
+        context.Response = await RequestIssuanceAsync(context.Request);
+        return context;
+    }
+
+    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState)
     {
         if (this.options.DidAuthority == null) throw new ArgumentNullException(nameof(this.options.DidAuthority));
         var request = new IssuanceRequest
@@ -46,7 +56,7 @@ public class RequestClient
                 State = callbackState,
                 Headers = null // TODO
             },
-            Authority = this.options.DidAuthority, // TODO: Config has long-form issuer; demo request body in Portal just says "did:web:kontoso.org" though
+            Authority = this.options.DidAuthority,
             Registration = new Registration
             {
                 ClientName = this.options.ClientName
@@ -54,57 +64,65 @@ public class RequestClient
             Issuance = new Issuance
             {
                 Type = credentialType,
-                Manifest = GetApiUrl("verifiableCredential/contracts/" + WebUtility.UrlEncode(credentialType)),
-                Claims = null // TODO: This is used in the B2C sample when there are any self-asserted claims in the rules definition file.
+                Manifest = GetManifestUrl(credentialType),
+                Claims = claims // TODO: This is only used in id_token_hint flows?
             }
         };
-        if (this.options.MinimumPinLength.HasValue && this.options.MinimumPinLength.Value > 0)
+        var context = new IssuanceRequestContext(request);
+        if (this.options.PinLength.HasValue && this.options.PinLength.Value > 0)
         {
-            var pinValue = RandomNumberGenerator.GetInt32(1, (int)Math.Pow(10, this.options.MinimumPinLength.Value));
-            var pinValueString = string.Format("{0:D" + this.options.MinimumPinLength + "}", pinValue);
+            var pinValue = RandomNumberGenerator.GetInt32(1, (int)Math.Pow(10, this.options.PinLength.Value));
+            var pinValueString = string.Format("{0:D" + this.options.PinLength + "}", pinValue);
+            context.PinValue = pinValueString;
             request.Issuance.Pin = new Pin
             {
-                Length = this.options.MinimumPinLength.Value,
+                Length = this.options.PinLength.Value,
                 Value = pinValueString
             };
         }
-        return request;
+        return context;
     }
 
-    public Task RequestIssuanceAsync(string credentialType, string callbackUrl, string callbackState)
+    public async Task<IssuanceResponse> RequestIssuanceAsync(IssuanceRequest request)
     {
-        var request = GetIssuanceRequest(credentialType, callbackUrl, callbackState);
-        return RequestIssuanceAsync(request);
-    }
-
-    public async Task RequestIssuanceAsync(IssuanceRequest request)
-    {
-        var url = GetApiUrl("verifiablecredentials/request");
+        var url = GetRequestIssuanceUrl();
         this.httpClient.DefaultRequestHeaders.Authorization = await GetAuthorizationHeader();
         var responseMessage = await this.httpClient.PostAsJsonAsync(url, request, jsonSerializerOptions);
         using var responseStream = await responseMessage.Content.ReadAsStreamAsync();
         if (responseMessage.IsSuccessStatusCode)
         {
             var response = await JsonSerializer.DeserializeAsync<IssuanceResponse>(responseStream, jsonSerializerOptions);
+            if (response != null)
+            {
+                return response;
+            }
+        }
+
+        var errorMessage = "There was an error calling the Verifiable Credentials Service.";
+        var errorContent = await responseMessage.Content.ReadAsStringAsync();
+        var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(errorContent, jsonSerializerOptions);
+        if (errorResponse?.Error != null)
+        {
+            // Throw a specific exception in case there was a service-level error.
+            errorMessage += $" Request ID: \"{errorResponse.RequestId}\". {errorResponse.Error.GetErrorMessage()}";
         }
         else
         {
-            var errorContent = await responseMessage.Content.ReadAsStringAsync();
-            var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(errorContent, jsonSerializerOptions);
-            if (errorResponse != null && errorResponse.Error != null)
-            {
-                // Throw a specific exception in case there was a service-level error.
-                var errorMessage = errorResponse.Error.GetErrorMessage("There was an error calling the Verifiable Credentials Service.");
-                this.logger.LogError($"{errorMessage} Request ID: {errorResponse.RequestId}.");
-                throw new ApplicationException(errorMessage);
-            }
-            else
-            {
-                // Throw default exception in case of other failures.
-                this.logger.LogError($"There was an error calling the Verifiable Credentials Service: {errorContent}");
-                responseMessage.EnsureSuccessStatusCode();
-            }
+            // Throw default exception in case of other failures.
+            errorMessage += " " + errorContent;
         }
+        this.logger.LogError(errorMessage);
+        throw new HttpRequestException(errorMessage);
+    }
+
+    public string GetManifestUrl(string credentialType)
+    {
+        return GetApiUrl("verifiableCredential/contracts/" + HttpUtility.UrlPathEncode(credentialType));
+    }
+
+    public string GetRequestIssuanceUrl()
+    {
+        return GetApiUrl("verifiablecredentials/request");
     }
 
     private async Task<AuthenticationHeaderValue> GetAuthorizationHeader()

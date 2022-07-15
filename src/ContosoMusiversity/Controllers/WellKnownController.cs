@@ -5,9 +5,9 @@ namespace ContosoMusiversity.Controllers;
 
 public class WellKnownController : ControllerBase
 {
-    private readonly RequestClientOptions options;
+    private readonly IssuanceRequestClientOptions options;
 
-    public WellKnownController(RequestClientOptions options)
+    public WellKnownController(IssuanceRequestClientOptions options)
     {
         this.options = options;
     }

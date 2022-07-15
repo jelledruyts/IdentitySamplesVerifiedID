@@ -50,15 +50,6 @@
 //     }
 
 //     /// <summary>
-//     /// Error - in case the VC Client API returns an error
-//     /// </summary>
-//     public class Error
-//     {
-//         public string code { get; set; }
-//         public string message { get; set; }
-//     }
-
-//     /// <summary>
 //     /// Receipt - returned when VC presentation is verified. The id_token contains the full VC id_token
 //     /// the state is not to be confused with the VCCallbackEvent.state and is something internal to the VC Client API
 //     /// </summary>

@@ -1,38 +1,51 @@
-﻿var signIn = document.getElementById('sign-in');
-var qrcode = new QRCode("qrcode", { width: 300, height: 300 });
+﻿var qrCodeGenerator = new QRCode('qrCodeCanvas', { width: 300, height: 300 });
 
-signIn.addEventListener('click', () => {
+var getCredentialButton = document.getElementById('getCredential');
+var errorMessageElement = document.getElementById('errorMessage');
+var responsePanel = document.getElementById('responsePanel');
+var qrCodeImage = document.getElementById('qrCodeImage');
+var qrCodeCanvas = document.getElementById('qrCodeCanvas');
+var deepLink = document.getElementById('deepLink');
+var requestIdElement = document.getElementById('requestId');
+var pinPanelElement = document.getElementById('pinPanel');
+var pinCodeElement = document.getElementById('pinCode');
+
+getCredentialButton.addEventListener('click', () => {
     fetch('api/issuer/issuance-request', { method: 'POST' })
         .then(function (response) {
-            var errorMessageElement = document.getElementById('errorMessage');
             if (!response.ok) {
-                errorMessageElement.style.display = "block";
+                // Something went wrong, show an error message.
                 response.json().then(function (errorBody) {
                     errorMessageElement.innerText = errorBody.title;
                 }).catch(error => {
                     errorMessageElement.innerText = error.message;
                 });
+                errorMessageElement.style.display = 'block';
+                responsePanel.style.display = 'none';
             } else {
-                errorMessageElement.style.display = "none";
+                // The request was successful, show the response.
                 response.json().then(function (responseBody) {
-                    if (/Android/i.test(navigator.userAgent)) {
-                        console.log(`Android device! Using deep link (${responseBody}).`);
-                        window.location.href = responseBody;
-                        setTimeout(function () {
-                            window.location.href = "https://play.google.com/store/apps/details?id=com.azure.authenticator";
-                        }, 2000);
-                    } else if (/iPhone/i.test(navigator.userAgent)) {
-                        console.log(`iOS device! Using deep link (${responseBody}).`);
-                        window.location.replace(responseBody);
-                    } else {
-                        console.log(`Not Android or IOS. Generating QR code encoded with ${responseBody}`);
-                        qrcode.makeCode(responseBody);
-                        document.getElementById('sign-in').style.display = "none";
-                        document.getElementById('qrText').style.display = "block";
+                    requestIdElement.innerText = responseBody.requestId;
+                    pinPanel.style.display = 'none';
+                    if (responseBody.pinValue) {
+                        pinCodeElement.innerText = responseBody.pinValue;
+                        pinPanel.style.display = 'block';
                     }
+                    deepLink.href = responseBody.url;
+                    if (responseBody.qrCode) {
+                        // The QR code is already available as a base64 encoded image.
+                        qrCodeImage.src = responseBody.qrCode;
+                        qrCodeImage.style.display = 'block';
+                    } else {
+                        // Create a QR code from the URL.
+                        qrCodeGenerator.makeCode(responseBody.url);
+                        qrCodeCanvas.style.display = 'block';
+                    }
+                    errorMessageElement.style.display = 'none';
+                    responsePanel.style.display = 'block';
                 })
             };
         }).catch(error => {
             console.log(error.message);
         })
-})
+});

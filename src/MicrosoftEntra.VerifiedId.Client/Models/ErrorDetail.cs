@@ -11,13 +11,9 @@ public class ErrorDetail
     [JsonPropertyName("innererror")]
     public ErrorDetail? InnerError { get; set; }
 
-    public string GetErrorMessage(string? prefix)
+    public string GetErrorMessage()
     {
-        var errorMessage = new StringBuilder(prefix);
-        if (prefix != null && !prefix.EndsWith(' '))
-        {
-            errorMessage.Append(' ');
-        }
+        var errorMessage = new StringBuilder();
         var detail = this;
         while (detail != null)
         {

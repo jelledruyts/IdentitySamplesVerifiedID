@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Identity.Client;
 using MicrosoftEntra.VerifiedId;
 using MicrosoftEntra.VerifiedId.Client;
@@ -6,13 +5,13 @@ using MicrosoftEntra.VerifiedId.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 // Retrieve configuration.
-var requestClientOptions = new RequestClientOptions();
+var requestClientOptions = new IssuanceRequestClientOptions();
 builder.Configuration.Bind("EntraVerifiedId", requestClientOptions);
 
 // Add Verified ID services.
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<RequestClientOptions>(requestClientOptions);
-builder.Services.AddScoped<RequestClient>();
+builder.Services.AddSingleton<IssuanceRequestClientOptions>(requestClientOptions);
+builder.Services.AddScoped<IssuanceRequestClient>();
 
 // Add MSAL services.
 var msalOptions = new ConfidentialClientApplicationOptions();
