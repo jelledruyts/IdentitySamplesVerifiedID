@@ -17,6 +17,11 @@
     },
     "claims": [
       {
+        "claim": "vc.credentialSubject.userName",
+        "label": "User name",
+        "type": "String"
+      },
+      {
         "claim": "vc.credentialSubject.firstName",
         "label": "First name",
         "type": "String"

@@ -4,6 +4,12 @@
       {
         "mapping": [
           {
+            "outputClaim": "userName",
+            "required": true,
+            "inputClaim": "user_name",
+            "indexed": true
+          },
+          {
             "outputClaim": "firstName",
             "required": true,
             "inputClaim": "given_name",

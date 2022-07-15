@@ -14,7 +14,6 @@ using MicrosoftEntra.VerifiedId.Client.Models;
 
 namespace MicrosoftEntra.VerifiedId.Client;
 
-// TODO: Create IIssuanceRequestClient for cleaner DI?
 public class IssuanceRequestClient
 {
     private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
@@ -22,7 +21,7 @@ public class IssuanceRequestClient
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-    private static string[] VerifiableCredentialsServiceRequestScopes = new[] { "3db474b9-6a0c-4840-96ac-1fceb342124f/.default" }; // This is the fixed scope which is required for the "Verifiable Credentials Service Request" app permission.
+    private static string[] VerifiableCredentialsServiceRequestScopes = new[] { VerifiedIdConstants.Scopes.VerifiableCredentialsServiceRequestScope };
 
     private ILogger logger;
     private readonly IssuanceRequestClientOptions options;
@@ -49,7 +48,7 @@ public class IssuanceRequestClient
         if (this.options.DidAuthority == null) throw new ArgumentNullException(nameof(this.options.DidAuthority));
         var request = new IssuanceRequest
         {
-            IncludeQRCode = true,
+            IncludeQRCode = true, // TODO: Make configurable?
             Callback = new Callback
             {
                 Url = callbackUrl,

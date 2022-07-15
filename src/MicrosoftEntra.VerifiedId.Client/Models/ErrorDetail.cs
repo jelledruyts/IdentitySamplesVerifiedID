@@ -3,11 +3,29 @@ using System.Text.Json.Serialization;
 
 namespace MicrosoftEntra.VerifiedId.Client.Models;
 
+/// <summary>
+/// Error details containing more information about the reason of the failure.
+/// </summary>
 public class ErrorDetail
 {
+    /// <summary>
+    /// The return error code.
+    /// </summary>
     public string? Code { get; set; }
+
+    /// <summary>
+    /// The error message.
+    /// </summary>
     public string? Message { get; set; }
+
+    /// <summary>
+    /// The target of the error.
+    /// </summary>
     public string? Target { get; set; }
+
+    /// <summary>
+    /// The inner error.
+    /// </summary>
     [JsonPropertyName("innererror")]
     public ErrorDetail? InnerError { get; set; }
 
