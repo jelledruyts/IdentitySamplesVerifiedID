@@ -1,11 +1,24 @@
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Identity.Client;
 using MicrosoftEntra.VerifiedId;
+using MicrosoftEntra.VerifiedId.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Retrieve configuration.
 var requestClientOptions = new RequestClientOptions();
-builder.Configuration.Bind("MicrosoftEntra", requestClientOptions);
+builder.Configuration.Bind("EntraVerifiedId", requestClientOptions);
+
+// Add Verified ID services.
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<RequestClientOptions>(requestClientOptions);
+builder.Services.AddScoped<RequestClient>();
+
+// Add MSAL services.
+var msalOptions = new ConfidentialClientApplicationOptions();
+builder.Configuration.Bind("EntraVerifiedId", msalOptions);
+var confidentialClientApplication = ConfidentialClientApplicationBuilder.CreateWithApplicationOptions(msalOptions).Build();
+builder.Services.AddSingleton<IConfidentialClientApplication>(confidentialClientApplication);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -15,6 +28,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/error-development");
+}
+else
+{
+    app.UseExceptionHandler("/error");
 }
 
 app.UseHttpsRedirection();

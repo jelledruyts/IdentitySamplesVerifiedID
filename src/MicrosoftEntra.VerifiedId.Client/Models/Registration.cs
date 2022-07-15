@@ -1,7 +1,6 @@
-namespace MicrosoftEntra.VerifiedId.Client
+namespace MicrosoftEntra.VerifiedId.Client.Models;
+
+public class Registration
 {
-    public class Registration
-    {
-        public string? ClientName { get; set; }
-    }
+    public string? ClientName { get; set; }
 }
