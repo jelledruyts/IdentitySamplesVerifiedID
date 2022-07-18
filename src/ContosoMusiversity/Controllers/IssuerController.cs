@@ -19,14 +19,16 @@ public class IssuerController : ControllerBase
 
     // [Authorize] // TODO: Ensure user is logged in
     [HttpPost("api/issuer/issuance-request")]
-    public async Task<IssuanceApiResponse> IssuanceRequest()
+    public async Task<IssuanceApiResponse> IssuanceRequest([FromBody] IssuanceApiRequest request)
     {
         var absoluteCallbackUrl = Url.Action(nameof(IssuanceCallback), null, null, "https")!;
         var claims = new Dictionary<string, string>();
+        var credentialType = "Verified Student";
         claims.Add("user_name", "john@doe.com");
         claims.Add("given_name", "John");
         claims.Add("family_name", "Doe");
-        var context = await this.requestClient.RequestIssuanceAsync("Verified Student", claims, absoluteCallbackUrl, "TODO");
+        var pinLength = request.UsePinCode ? (int?)4 : null;
+        var context = await this.requestClient.RequestIssuanceAsync(credentialType, claims, absoluteCallbackUrl, "TODO", pinLength: pinLength, includeQRCode: true);
         return new IssuanceApiResponse(context);
     }
 
@@ -36,7 +38,6 @@ public class IssuerController : ControllerBase
         this.logger.LogInformation($"Issuance callback received for request \"{message.RequestId}\": {message.Code}");
         if (message.Error != null)
         {
-            // "badOrMissingField": unspecified_error
             this.logger.LogError(message.Error.GetErrorMessage());
         }
         return Ok();

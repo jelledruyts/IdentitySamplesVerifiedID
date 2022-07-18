@@ -24,12 +24,12 @@
         ],
         "required": false
       }
-    ],
-    "validityInterval": 2592000,
-    "vc": {
-      "type": [
-        "VerifiedStudent"
-      ]
-    }
+    ]
+  },
+  "validityInterval": 2592000,
+  "vc": {
+    "type": [
+      "Verified Student"
+    ]
   }
 }

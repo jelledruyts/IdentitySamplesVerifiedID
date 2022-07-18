@@ -36,19 +36,19 @@ public class IssuanceRequestClient
         this.confidentialClientApplication = confidentialClientApplication;
     }
 
-    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState)
+    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState, int? pinLength = null, bool? includeQRCode = null)
     {
-        var context = GetIssuanceRequest(credentialType, claims, callbackUrl, callbackState);
+        var context = GetIssuanceRequest(credentialType, claims, callbackUrl, callbackState, pinLength, includeQRCode);
         context.Response = await RequestIssuanceAsync(context.Request);
         return context;
     }
 
-    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState)
+    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState, int? pinLength = null, bool? includeQRCode = null)
     {
         if (this.options.DidAuthority == null) throw new ArgumentNullException(nameof(this.options.DidAuthority));
         var request = new IssuanceRequest
         {
-            IncludeQRCode = true, // TODO: Make configurable?
+            IncludeQRCode = includeQRCode ?? false,
             Callback = new Callback
             {
                 Url = callbackUrl,
@@ -68,14 +68,16 @@ public class IssuanceRequestClient
             }
         };
         var context = new IssuanceRequestContext(request);
-        if (this.options.PinLength.HasValue && this.options.PinLength.Value > 0)
+        // Check if a PIN was either explicitly requested or otherwise statically configured.
+        var requestedPinLength = pinLength.HasValue ? pinLength.Value : (this.options.PinLength.HasValue ? this.options.PinLength.Value : 0);
+        if (requestedPinLength > 0)
         {
-            var pinValue = RandomNumberGenerator.GetInt32(1, (int)Math.Pow(10, this.options.PinLength.Value));
-            var pinValueString = string.Format("{0:D" + this.options.PinLength + "}", pinValue);
+            var pinValue = RandomNumberGenerator.GetInt32(1, (int)Math.Pow(10, requestedPinLength));
+            var pinValueString = string.Format("{0:D" + requestedPinLength + "}", pinValue);
             context.PinValue = pinValueString;
             request.Issuance.Pin = new Pin
             {
-                Length = this.options.PinLength.Value,
+                Length = requestedPinLength,
                 Value = pinValueString
             };
         }
