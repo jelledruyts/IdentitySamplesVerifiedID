@@ -1,14 +1,5 @@
-﻿document.getElementById('issueCredential').addEventListener('click', () => {
-    var data = {
-        'usePinCode': document.getElementById('usePinCode').checked
-    };
-    fetch('api/issuance/request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }).then(function (response) {
+﻿document.getElementById('presentCredential').addEventListener('click', () => {
+    fetch('api/presentation/request', { method: 'POST' }).then(function (response) {
         if (!response.ok) {
             // Something went wrong, show an error message.
             var errorMessageElement = document.getElementById('errorMessage');
@@ -20,15 +11,9 @@
             errorMessageElement.style.display = 'block';
             document.getElementById('responsePanel').style.display = 'none';
         } else {
-            // The issuance request was successful, show the response.
+            // The presentation request was successful, show the response.
             response.json().then(function (responseBody) {
                 document.getElementById('requestId').innerText = responseBody.requestId;
-                var pinPanel = document.getElementById('pinPanel');
-                pinPanel.style.display = 'none';
-                if (responseBody.pinValue) {
-                    document.getElementById('pinCode').innerText = responseBody.pinValue;
-                    pinPanel.style.display = 'block';
-                }
                 document.getElementById('deepLink').href = responseBody.url;
                 var qrCodeImage = document.getElementById('qrCodeImage');
                 qrCodeImage.src = responseBody.qrCode;

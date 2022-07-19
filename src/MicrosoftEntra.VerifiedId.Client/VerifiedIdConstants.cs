@@ -1,4 +1,4 @@
-namespace MicrosoftEntra.VerifiedId;
+namespace MicrosoftEntra.VerifiedId.Client;
 
 public static class VerifiedIdConstants
 {
@@ -42,7 +42,7 @@ public static class VerifiedIdConstants
     public static class CallbackCodes
     {
         /// <summary>
-        /// The user scanned the QR code or selected the link that starts the issuance flow.
+        /// The user scanned the QR code or selected the link that starts the issuance or presentation flow.
         /// </summary>
         public const string RequestRetrieved = "request_retrieved";
 
@@ -55,5 +55,10 @@ public static class VerifiedIdConstants
         /// There was an error during issuance.
         /// </summary>
         public const string IssuanceError = "Issuance_error";
+
+        /// <summary>
+        /// The verifiable credential validation completed successfully.
+        /// </summary>
+        public const string PresentationVerified = "presentation_verified";
     }
 }

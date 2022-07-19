@@ -3,7 +3,7 @@ using MicrosoftEntra.VerifiedId.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Verified ID issuance services.
-builder.Services.AddVerifiedIdIssuance(builder.Configuration.GetSection("EntraVerifiedId"));
+builder.Services.AddVerifiedIdPresentation(builder.Configuration.GetSection("EntraVerifiedId"));
 
 // Add services to the container.
 builder.Services.AddControllers();

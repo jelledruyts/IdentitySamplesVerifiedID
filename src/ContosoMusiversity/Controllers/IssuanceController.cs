@@ -6,21 +6,22 @@ using MicrosoftEntra.VerifiedId.Client.Models;
 namespace ContosoMusiversity.Controllers;
 
 [ApiController]
-public class IssuerController : ControllerBase
+public class IssuanceController : ControllerBase
 {
-    private readonly ILogger<IssuerController> logger;
+    private readonly ILogger<IssuanceController> logger;
     private readonly IssuanceRequestClient requestClient;
 
-    public IssuerController(ILogger<IssuerController> logger, IssuanceRequestClient requestClient)
+    public IssuanceController(ILogger<IssuanceController> logger, IssuanceRequestClient requestClient)
     {
         this.logger = logger;
         this.requestClient = requestClient;
     }
 
     // [Authorize] // TODO: Ensure user is logged in
-    [HttpPost("api/issuer/issuance-request")]
+    [HttpPost("api/issuance/request")]
     public async Task<IssuanceApiResponse> IssuanceRequest([FromBody] IssuanceApiRequest request)
     {
+        // Get an absolute URL to the Callback action.
         var absoluteCallbackUrl = Url.Action(nameof(IssuanceCallback), null, null, "https")!;
         var claims = new Dictionary<string, string>();
         var credentialType = "Verified Student";
@@ -28,12 +29,12 @@ public class IssuerController : ControllerBase
         claims.Add("given_name", "John");
         claims.Add("family_name", "Doe");
         var pinLength = request.UsePinCode ? (int?)4 : null;
-        var context = await this.requestClient.RequestIssuanceAsync(credentialType, claims, absoluteCallbackUrl, "TODO", pinLength: pinLength, includeQRCode: true);
+        var context = await this.requestClient.RequestIssuanceAsync(credentialType, claims, absoluteCallbackUrl, "TODO", includeQRCode: true, pinLength: pinLength);
         return new IssuanceApiResponse(context);
     }
 
-    [HttpPost("api/issuer/issuance-callback")]
-    public IActionResult IssuanceCallback(CallbackEventMessage message)
+    [HttpPost("api/issuance/callback")]
+    public IActionResult IssuanceCallback(IssuanceCallbackEventMessage message)
     {
         this.logger.LogInformation($"Issuance callback received for request \"{message.RequestId}\": {message.Code}");
         if (message.Error != null)
@@ -43,9 +44,9 @@ public class IssuerController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("api/issuer/issuance-response")]
-    public string IssuanceResponse()
+    [HttpPost("api/issuance/response")] // TODO: Rename to poll?
+    public IActionResult IssuanceResponse()
     {
-        return "ok";
+        return Ok();
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MicrosoftEntra.VerifiedId.Client;
 
-namespace ContosoMusiversity.Controllers;
+namespace RelecloudInstruments.Controllers;
 
 public class WellKnownController : ControllerBase
 {
