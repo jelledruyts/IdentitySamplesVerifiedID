@@ -26,6 +26,7 @@ jobs:
       run: |
         echo Building app version ${{ env.AppVersion }}
         docker build --no-cache --build-arg app_version=${{ env.AppVersion }} --build-arg source_version=$GITHUB_SHA -t jelledruyts/contosomusiversity:latest -f ./src/ContosoMusiversity/Dockerfile ./src
+        docker build --no-cache --build-arg app_version=${{ env.AppVersion }} --build-arg source_version=$GITHUB_SHA -t jelledruyts/relecloudinstruments:latest -f ./src/RelecloudInstruments/Dockerfile ./src
     - name: Push Containers to GitHub Packages
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -33,6 +34,10 @@ jobs:
         docker tag jelledruyts/contosomusiversity:latest ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
         docker push ghcr.io/jelledruyts/contosomusiversity:latest
         docker push ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
+        docker tag jelledruyts/relecloudinstruments:latest ghcr.io/jelledruyts/relecloudinstruments:latest
+        docker tag jelledruyts/relecloudinstruments:latest ghcr.io/jelledruyts/relecloudinstruments:${{ env.AppVersion }}
+        docker push ghcr.io/jelledruyts/relecloudinstruments:latest
+        docker push ghcr.io/jelledruyts/relecloudinstruments:${{ env.AppVersion }}
     - name: Azure Login
       uses: Azure/login@v1
       with:
@@ -45,3 +50,4 @@ jobs:
         inlineScript: |
           az config set extension.use_dynamic_install=yes_without_prompt
           az containerapp update -n containerapp-app-kontoso -g identitysamplesverifiedid -i ghcr.io/jelledruyts/contosomusiversity:${{ env.AppVersion }}
+          az containerapp update -n containerapp-app-relekloud -g identitysamplesverifiedid -i ghcr.io/jelledruyts/relecloudinstruments:${{ env.AppVersion }}
