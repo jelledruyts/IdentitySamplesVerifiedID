@@ -19,15 +19,18 @@ public class IssuanceRequestClient : BaseRequestClient
         this.options = options;
     }
 
-    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
+    public IssuanceRequestContext GetIssuanceRequest(string credentialType, string callbackUrl, IDictionary<string, string>? claims = null, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
     {
         var request = base.GetRequest<IssuanceRequest>(callbackUrl, callbackState, includeQRCode);
         request.Issuance = new Issuance
         {
             Type = credentialType,
             Manifest = GetManifestUrl(credentialType),
-            Claims = claims // TODO: This is only used in id_token_hint flows?
         };
+        if (claims != null)
+        {
+            request.Issuance.Claims = claims;
+        }
         var context = new IssuanceRequestContext(request);
 
         // Check if a PIN was either explicitly requested or otherwise statically configured.
@@ -47,13 +50,13 @@ public class IssuanceRequestClient : BaseRequestClient
         return context;
     }
 
-    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
+    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, string callbackUrl, IDictionary<string, string>? claims = null, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
     {
-        var context = GetIssuanceRequest(credentialType, claims, callbackUrl, callbackState, includeQRCode, pinLength);
+        var context = GetIssuanceRequest(credentialType, callbackUrl, claims, callbackState, includeQRCode, pinLength);
         context.Response = await RequestIssuanceAsync(context.Request);
         return context;
     }
-    
+
     public Task<IssuanceResponse> RequestIssuanceAsync(IssuanceRequest request)
     {
         return base.SendRequestAsync<IssuanceRequest, IssuanceResponse>(request);
