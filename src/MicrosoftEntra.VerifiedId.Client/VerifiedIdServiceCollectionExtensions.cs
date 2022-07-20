@@ -28,7 +28,7 @@ public static class VerifiedIdServiceCollectionExtensions
     public static IServiceCollection AddVerifiedIdIssuance(this IServiceCollection services, IssuanceRequestClientOptions issuanceRequestClientOptions, ConfidentialClientApplicationOptions msalOptions)
     {
         // Add Verified ID Issuance services.
-        AddCommonServices(services, msalOptions);
+        AddCommonRequestServices(services, msalOptions);
         services.AddSingleton<IssuanceRequestClientOptions>(issuanceRequestClientOptions);
         services.AddScoped<IssuanceRequestClient>();
         return services;
@@ -57,7 +57,7 @@ public static class VerifiedIdServiceCollectionExtensions
     public static IServiceCollection AddVerifiedIdPresentation(this IServiceCollection services, PresentationRequestClientOptions presentationRequestClientOptions, ConfidentialClientApplicationOptions msalOptions)
     {
         // Add Verified ID Presentation services.
-        AddCommonServices(services, msalOptions);
+        AddCommonRequestServices(services, msalOptions);
         services.AddSingleton<PresentationRequestClientOptions>(presentationRequestClientOptions);
         services.AddScoped<PresentationRequestClient>();
         return services;
@@ -65,9 +65,32 @@ public static class VerifiedIdServiceCollectionExtensions
 
     #endregion
 
+    #region Well-Known Endpoints
+
+    public static IServiceCollection AddVerifiedIdWellKnownEndpoints(this IServiceCollection services, IConfiguration namedConfigurationSection)
+    {
+        var wellKnownEndpointOptions = namedConfigurationSection.Get<WellKnownEndpointOptions>();
+        return services.AddVerifiedIdWellKnownEndpoints(wellKnownEndpointOptions);
+    }
+
+    public static IServiceCollection AddVerifiedIdWellKnownEndpoints(this IServiceCollection services, Action<WellKnownEndpointOptions> configureWellKnownEndpointOptions)
+    {
+        var wellKnownEndpointOptions = new WellKnownEndpointOptions();
+        configureWellKnownEndpointOptions.Invoke(wellKnownEndpointOptions);
+        return services.AddVerifiedIdWellKnownEndpoints(wellKnownEndpointOptions);
+    }
+
+    public static IServiceCollection AddVerifiedIdWellKnownEndpoints(this IServiceCollection services, WellKnownEndpointOptions wellKnownEndpointOptions)
+    {
+        services.AddSingleton<WellKnownEndpointOptions>(wellKnownEndpointOptions);
+        return services;
+    }
+
+    #endregion
+
     #region Common
 
-    private static void AddCommonServices(IServiceCollection services, ConfidentialClientApplicationOptions msalOptions)
+    private static void AddCommonRequestServices(IServiceCollection services, ConfidentialClientApplicationOptions msalOptions)
     {
         // Add HTTP client services.
         services.AddHttpClient();
