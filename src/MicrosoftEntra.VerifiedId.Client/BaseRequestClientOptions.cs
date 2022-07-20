@@ -22,4 +22,10 @@ public abstract class BaseRequestClientOptions
     /// The client name for the Verifiable Credentials Service.
     /// </summary>
     public string? ClientName { get; set; }
+
+    /// <summary>
+    /// Optional. The API key that the Verifiable Credentials Service needs to send
+    /// back on callback events.
+    /// </summary>
+    public string? ApiKey { get; set; }
 }

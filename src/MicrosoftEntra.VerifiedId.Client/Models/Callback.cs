@@ -26,5 +26,5 @@ public class Callback
     /// of the POST message. The current supported header values are the api-key or the
     /// Authorization headers. Any other header will throw an invalid callback header error.
     /// </summary>
-    public IDictionary<string, string>? Headers { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 }

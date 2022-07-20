@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using MicrosoftEntra.VerifiedId.Client.Models;
@@ -44,18 +45,37 @@ public abstract class BaseRequestClient
         return GetApiUrl("verifiablecredentials/request");
     }
 
+    public bool ValidateCallbackRequest(HttpRequest request)
+    {
+        if (string.IsNullOrEmpty(this.options.ApiKey))
+        {
+            // No API key was configured, so no need to check it on the callback.
+            return true;
+        }
+
+        if (request.Headers.TryGetValue(VerifiedIdConstants.CallbackHeaderNames.ApiKey, out var apiKeyHeaders))
+        {
+            // Validate that the callback request has the configured API key sent back.
+            if (string.Equals(this.options.ApiKey, apiKeyHeaders, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+        this.logger.LogDebug("Invalid callback request, required API key is missing");
+        return false;
+    }
+
     protected TRequest GetRequest<TRequest>(string callbackUrl, string? callbackState = null, bool? includeQRCode = null) where TRequest : BaseRequest, new()
     {
         // Callback state is required, but if the caller didn't require any then we just generate a new GUID.
         callbackState = string.IsNullOrWhiteSpace(callbackState) ? Guid.NewGuid().ToString() : callbackState;
-        return new TRequest
+        var request = new TRequest
         {
             IncludeQRCode = includeQRCode ?? false,
             Callback = new Callback
             {
                 Url = callbackUrl,
-                State = callbackState,
-                Headers = null // TODO
+                State = callbackState
             },
             Authority = this.options.DidAuthority,
             Registration = new Registration
@@ -63,6 +83,11 @@ public abstract class BaseRequestClient
                 ClientName = this.options.ClientName
             }
         };
+        if (!string.IsNullOrEmpty(this.options.ApiKey))
+        {
+            request.Callback.Headers.Add(VerifiedIdConstants.CallbackHeaderNames.ApiKey, this.options.ApiKey);
+        }
+        return request;
     }
 
     protected async Task<TResponse> SendRequestAsync<TRequest, TResponse>(TRequest request) where TRequest : BaseRequest where TResponse : BaseResponse

@@ -35,5 +35,5 @@ public class IssuedCredential
     /// <summary>
     /// The claims retrieved.
     /// </summary>
-    public IDictionary<string, string>? Claims { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
 }

@@ -8,5 +8,5 @@ public class PresentationRequest : BaseRequest
     /// <summary>
     /// Provides information about the presentation request.
     /// </summary>
-    public Presentation? Presentation { get; set; } = new Presentation();
+    public Presentation Presentation { get; set; } = new Presentation();
 }

@@ -19,7 +19,7 @@ public abstract class BaseRequest
     /// might want a call when the user has scanned the QR code or if the issuance or
     /// presentation request succeeds or fails.
     /// </summary>
-    public Callback? Callback { get; set; } = new Callback();
+    public Callback Callback { get; set; } = new Callback();
 
     /// <summary>
     /// The issuer's or verifier's decentralized identifier (DID).
@@ -29,5 +29,5 @@ public abstract class BaseRequest
     /// <summary>
     /// Provides information about the issuer or verifier that can be displayed in the authenticator app.
     /// </summary>
-    public Registration? Registration { get; set; } = new Registration();
+    public Registration Registration { get; set; } = new Registration();
 }

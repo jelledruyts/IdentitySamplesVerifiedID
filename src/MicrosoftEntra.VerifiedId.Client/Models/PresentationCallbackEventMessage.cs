@@ -24,7 +24,7 @@ public class PresentationCallbackEventMessage : BaseCallbackEventMessage
     /// <summary>
     /// Returns an array of verifiable credentials requested.
     /// </summary>
-    public IList<IssuedCredential>? Issuers { get; set; } = new List<IssuedCredential>();
+    public IList<IssuedCredential> Issuers { get; set; } = new List<IssuedCredential>();
 
     /// <summary>
     /// Optional. The receipt contains the original payload sent from the wallet to the Verifiable Credentials service.

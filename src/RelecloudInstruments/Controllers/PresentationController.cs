@@ -31,6 +31,10 @@ public class PresentationController : ControllerBase
     public IActionResult PresentationCallback(PresentationCallbackEventMessage message)
     {
         this.logger.LogInformation($"Presentation callback received for request \"{message.RequestId}\": {message.Code}");
+        if (!this.requestClient.ValidateCallbackRequest(this.Request))
+        {
+            return Unauthorized();
+        }
         return Ok();
     }
 

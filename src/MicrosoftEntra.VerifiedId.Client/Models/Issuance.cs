@@ -30,5 +30,5 @@ public class Issuance
     /// credential. For PIN code flow, it's important that you provide the user's first name
     /// and last name.
     /// </summary>
-    public IDictionary<string, string>? Claims { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
 }

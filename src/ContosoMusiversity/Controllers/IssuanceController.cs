@@ -37,6 +37,10 @@ public class IssuanceController : ControllerBase
     public IActionResult IssuanceCallback(IssuanceCallbackEventMessage message)
     {
         this.logger.LogInformation($"Issuance callback received for request \"{message.RequestId}\": {message.Code}");
+        if (!this.requestClient.ValidateCallbackRequest(this.Request))
+        {
+            return Unauthorized();
+        }
         if (message.Error != null)
         {
             this.logger.LogError(message.Error.GetErrorMessage());
