@@ -46,6 +46,8 @@ public abstract class BaseRequestClient
 
     protected TRequest GetRequest<TRequest>(string callbackUrl, string? callbackState = null, bool? includeQRCode = null) where TRequest : BaseRequest, new()
     {
+        // Callback state is required, but if the caller didn't require any then we just generate a new GUID.
+        callbackState = string.IsNullOrWhiteSpace(callbackState) ? Guid.NewGuid().ToString() : callbackState;
         return new TRequest
         {
             IncludeQRCode = includeQRCode ?? false,
