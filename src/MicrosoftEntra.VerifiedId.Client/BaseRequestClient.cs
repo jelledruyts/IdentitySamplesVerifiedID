@@ -44,7 +44,7 @@ public abstract class BaseRequestClient
         return GetApiUrl("verifiablecredentials/request");
     }
 
-    protected TRequest GetRequest<TRequest>(string callbackUrl, string callbackState, bool? includeQRCode) where TRequest : BaseRequest, new()
+    protected TRequest GetRequest<TRequest>(string callbackUrl, string? callbackState = null, bool? includeQRCode = null) where TRequest : BaseRequest, new()
     {
         return new TRequest
         {

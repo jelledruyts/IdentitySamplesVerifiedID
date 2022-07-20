@@ -23,7 +23,7 @@ public class PresentationController : ControllerBase
     {
         // Get an absolute URL to the Callback action.
         var absoluteCallbackUrl = Url.Action(nameof(PresentationCallback), null, null, "https")!;
-        var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, "TODO", includeQRCode: true, requestedCredentials: null);
+        var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, includeQRCode: true);
         return new PresentationApiResponse(response);
     }
 

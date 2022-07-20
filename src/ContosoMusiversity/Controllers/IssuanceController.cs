@@ -29,7 +29,7 @@ public class IssuanceController : ControllerBase
         claims.Add("given_name", "John");
         claims.Add("family_name", "Doe");
         var pinLength = request.UsePinCode ? (int?)4 : null;
-        var context = await this.requestClient.RequestIssuanceAsync(credentialType, claims, absoluteCallbackUrl, "TODO", includeQRCode: true, pinLength: pinLength);
+        var context = await this.requestClient.RequestIssuanceAsync(credentialType, claims, absoluteCallbackUrl, includeQRCode: true, pinLength: pinLength);
         return new IssuanceApiResponse(context);
     }
 

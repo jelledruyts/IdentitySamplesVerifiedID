@@ -19,7 +19,7 @@ public class IssuanceRequestClient : BaseRequestClient
         this.options = options;
     }
 
-    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState, bool? includeQRCode = null, int? pinLength = null)
+    public IssuanceRequestContext GetIssuanceRequest(string credentialType, IDictionary<string, string> claims, string callbackUrl, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
     {
         var request = base.GetRequest<IssuanceRequest>(callbackUrl, callbackState, includeQRCode);
         request.Issuance = new Issuance
@@ -47,7 +47,7 @@ public class IssuanceRequestClient : BaseRequestClient
         return context;
     }
 
-    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string callbackState, bool? includeQRCode = null, int? pinLength = null)
+    public async Task<IssuanceRequestContext> RequestIssuanceAsync(string credentialType, IDictionary<string, string> claims, string callbackUrl, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
     {
         var context = GetIssuanceRequest(credentialType, claims, callbackUrl, callbackState, includeQRCode, pinLength);
         context.Response = await RequestIssuanceAsync(context.Request);

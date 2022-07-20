@@ -17,7 +17,7 @@ public class PresentationRequestClient : BaseRequestClient
         this.options = options;
     }
 
-    public PresentationRequest GetPresentationRequest(string callbackUrl, string callbackState, bool? includeQRCode = null, IList<RequestedCredential>? requestedCredentials = null)
+    public PresentationRequest GetPresentationRequest(string callbackUrl, string? callbackState = null, bool? includeQRCode = null, IList<RequestedCredential>? requestedCredentials = null)
     {
         var request = base.GetRequest<PresentationRequest>(callbackUrl, callbackState, includeQRCode);
         request.Presentation = new Presentation
@@ -40,7 +40,7 @@ public class PresentationRequestClient : BaseRequestClient
         return request;
     }
 
-    public Task<PresentationResponse> RequestPresentationAsync(string callbackUrl, string callbackState, bool? includeQRCode = null, IList<RequestedCredential>? requestedCredentials = null)
+    public Task<PresentationResponse> RequestPresentationAsync(string callbackUrl, string? callbackState = null, bool? includeQRCode = null, IList<RequestedCredential>? requestedCredentials = null)
     {
         var request = GetPresentationRequest(callbackUrl, callbackState, includeQRCode, requestedCredentials);
         return RequestPresentationAsync(request);
