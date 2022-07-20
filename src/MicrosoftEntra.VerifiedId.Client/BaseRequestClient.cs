@@ -67,6 +67,7 @@ public abstract class BaseRequestClient
     {
         var url = GetRequestUrl();
         this.httpClient.DefaultRequestHeaders.Authorization = await GetAuthorizationHeader();
+        this.logger.LogDebug($"Calling Verifiable Credentials Service at \"{url}\" with callback URL \"{request.Callback?.Url}\"");
         var responseMessage = await this.httpClient.PostAsJsonAsync(url, request, jsonSerializerOptions);
         using var responseStream = await responseMessage.Content.ReadAsStreamAsync();
         if (responseMessage.IsSuccessStatusCode)
@@ -74,6 +75,7 @@ public abstract class BaseRequestClient
             var response = await JsonSerializer.DeserializeAsync<TResponse>(responseStream, jsonSerializerOptions);
             if (response != null)
             {
+                this.logger.LogDebug($"Request was accepted with Request ID \"{response.RequestId}\"");
                 return response;
             }
         }
