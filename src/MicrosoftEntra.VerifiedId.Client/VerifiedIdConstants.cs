@@ -54,7 +54,7 @@ public static class VerifiedIdConstants
         /// <summary>
         /// There was an error during issuance.
         /// </summary>
-        public const string IssuanceError = "Issuance_error";
+        public const string IssuanceError = "issuance_error";
 
         /// <summary>
         /// The verifiable credential validation completed successfully.

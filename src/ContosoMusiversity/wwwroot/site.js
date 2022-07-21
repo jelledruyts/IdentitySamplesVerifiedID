@@ -56,9 +56,9 @@ document.getElementById('issueCredential').addEventListener('click', () => {
                                     // The QR code was scanned, hide it.
                                     document.getElementById('scanPanel').style.display = 'none';
                                     statusMessage.innerHTML = 'Please accept your verified credential.' + pinCodeMessage;
-                                } else if (statusResponseBody.status == 'Issuance_error') {
+                                } else if (statusResponseBody.status == 'issuance_error') {
                                     // An error occurred.
-                                    statusMessage.innerText = `Something went wrong: ${statusResponseBody.error.message}.`;
+                                    statusMessage.innerText = `Something went wrong: ${statusResponseBody.message}.`;
                                 } else if (statusResponseBody.status == 'issuance_successful') {
                                     // Stop polling for changes.
                                     clearInterval(checkStatus);

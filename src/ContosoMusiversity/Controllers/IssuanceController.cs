@@ -92,7 +92,8 @@ public class IssuanceController : ControllerBase
                 // If the credential was successfully issued, return the credential details to the client.
                 return new IssuanceStatus
                 {
-                    Status = cachedMessage.Code
+                    Status = cachedMessage.Code,
+                    Message = cachedMessage.Error?.Message
                 };
             }
         }
