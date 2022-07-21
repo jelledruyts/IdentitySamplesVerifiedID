@@ -61,4 +61,21 @@ public static class VerifiedIdConstants
         /// </summary>
         public const string PresentationVerified = "presentation_verified";
     }
+
+    public static class CredentialTypes
+    {
+        public static readonly string[] BaseTypes = new[] { VerifiableCredential, VerifiablePresentation };
+
+        /// <summary>
+        /// A type which specifies a verifiable credential.
+        /// See https://www.w3.org/TR/vc-data-model/#types.
+        /// </summary>
+        public const string VerifiableCredential = "VerifiableCredential";
+
+        /// <summary>
+        /// A type which specifies a verifiable presentation.
+        /// See https://www.w3.org/TR/vc-data-model/#types.
+        /// </summary>
+        public const string VerifiablePresentation = "VerifiablePresentation";
+    }
 }

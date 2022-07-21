@@ -7,7 +7,7 @@ namespace MicrosoftEntra.VerifiedId.Client;
 public static class VerifiedIdApplicationBuilderExtensions
 {
     /// <summary>
-    /// Listen for requests on the ".well-known" endopint for "did.json" and "did-configuration.json".
+    /// Listen for requests on the ".well-known" endpoint for "did.json" and "did-configuration.json".
     /// </summary>
     /// <param name="app">The application builder.</param>
     /// <returns>The application builder.</returns>
