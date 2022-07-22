@@ -8,7 +8,7 @@
       "description": "Use your verified credential to prove to anyone that you are a student at Contoso Musiversity.",
       "logo": {
         "description": "Verified Student Logo",
-        "uri": "https://kontoso.org/logo.png"
+        "uri": "https://contoso.org/logo.png"
       }
     },
     "consent": {

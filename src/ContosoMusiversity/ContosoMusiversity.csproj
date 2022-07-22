@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.25.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../MicrosoftEntra.VerifiedId.Client/MicrosoftEntra.VerifiedId.Client.csproj" />
   </ItemGroup>
 

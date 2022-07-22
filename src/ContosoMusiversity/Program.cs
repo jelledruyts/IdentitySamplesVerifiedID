@@ -1,6 +1,15 @@
+using System.IdentityModel.Tokens.Jwt;
+using ContosoMusiversity;
+using Microsoft.Identity.Web;
 using MicrosoftEntra.VerifiedId.Client;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Don't map any standard OpenID Connect claims to Microsoft-specific claims.
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+// Add app configuration.
+builder.Services.Configure<AppConfiguration>(builder.Configuration.GetSection("ContosoMusiversity"));
 
 // Add Verified ID issuance services.
 builder.Services.AddVerifiedIdIssuance(builder.Configuration.GetSection("EntraVerifiedId"));
@@ -13,6 +22,11 @@ builder.Services.AddVerifiedIdWellKnownEndpoints(builder.Configuration.GetSectio
 // cache won't survive a restart of the app.
 // See https://docs.microsoft.com/aspnet/core/performance/caching/distributed.
 builder.Services.AddDistributedMemoryCache();
+
+// Add authentication services for the APIs which rely on a user context.
+// Reuse the Client ID as the valid Audience as that's what the browser app will request for its access token scope.
+builder.Configuration["EntraVerifiedId:Audience"] = builder.Configuration.GetValue<string>("EntraVerifiedId:ClientId");
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "EntraVerifiedId");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -32,10 +46,15 @@ else
 app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 // Expose the "/.well-known/did.json" and "/.well-known/did-configuration.json" endpoints.
 app.UseVerifiedIdWellKnownEndpoints();

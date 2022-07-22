@@ -6,7 +6,7 @@
           {
             "outputClaim": "userName",
             "required": true,
-            "inputClaim": "user_name",
+            "inputClaim": "unique_name",
             "indexed": true
           },
           {

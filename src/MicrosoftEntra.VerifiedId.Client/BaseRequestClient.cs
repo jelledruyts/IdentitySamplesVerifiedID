@@ -132,8 +132,8 @@ public abstract class BaseRequestClient
 
     private string GetApiUrl(string api)
     {
-        if (this.options.DidInstance == null) throw new ArgumentNullException(nameof(this.options.DidInstance));
-        if (this.options.TenantId == null) throw new ArgumentNullException(nameof(this.options.TenantId));
+        ArgumentNullException.ThrowIfNull(this.options.DidInstance);
+        ArgumentNullException.ThrowIfNull(this.options.TenantId);
         return $"{this.options.DidInstance.TrimEnd('/')}/{this.options.TenantId}/{api}";
     }
 }

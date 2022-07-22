@@ -1,7 +1,9 @@
 using System.Text.Json;
 using ContosoMusiversity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using MicrosoftEntra.VerifiedId.Client;
 using MicrosoftEntra.VerifiedId.Client.Models;
 
@@ -10,15 +12,19 @@ namespace ContosoMusiversity.Controllers;
 [ApiController]
 public class IssuanceController : ControllerBase
 {
+    private const string RolesClaimType = "roles";
+    private const string ObjectIdClaimType = "oid";
     private readonly ILogger<IssuanceController> logger;
     private readonly IssuanceRequestClient requestClient;
+    private readonly AppConfiguration appConfiguration;
     private readonly IDistributedCache distributedCache;
     private readonly DistributedCacheEntryOptions distributedCacheOptions;
 
-    public IssuanceController(ILogger<IssuanceController> logger, IssuanceRequestClient requestClient, IDistributedCache distributedCache)
+    public IssuanceController(ILogger<IssuanceController> logger, IssuanceRequestClient requestClient, IOptions<AppConfiguration> appConfiguration, IDistributedCache distributedCache)
     {
         this.logger = logger;
         this.requestClient = requestClient;
+        this.appConfiguration = appConfiguration.Value;
         this.distributedCache = distributedCache;
         this.distributedCacheOptions = new DistributedCacheEntryOptions
         {
@@ -28,7 +34,7 @@ public class IssuanceController : ControllerBase
         };
     }
 
-    // [Authorize] // TODO: Ensure user is logged in
+    [Authorize]
     [HttpPost("api/issuance/request")]
     public async Task<IssuanceApiResponse> IssuanceRequest([FromBody] IssuanceApiRequest request)
     {
@@ -37,18 +43,54 @@ public class IssuanceController : ControllerBase
 
         // Define the claims that will be part of the issued credential.
         var claims = new Dictionary<string, string>();
-        var credentialType = "Verified Student";
-        claims.Add("user_name", "john@doe.com");
-        claims.Add("given_name", "John");
-        claims.Add("family_name", "Doe");
+        foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims)
+        {
+            var userClaim = this.User.Claims.FirstOrDefault(c => string.Equals(c.Type, verifiedCredentialInputClaim, StringComparison.OrdinalIgnoreCase));
+            if (userClaim != null)
+            {
+                claims[verifiedCredentialInputClaim] = userClaim.Value;
+            }
+        }
 
         // If a PIN code was requested, use 4 digits.
         var pinLength = request.UsePinCode ? (int?)4 : null;
 
         // Send an issuance request to the Verifiable Credentials Service.
-        var context = await this.requestClient.RequestIssuanceAsync(credentialType, absoluteCallbackUrl, claims, includeQRCode: true, pinLength: pinLength);
+        var credentialType = GetUserCredentialType();
+        var callbackState = GetUserObjectId(); // Use the user's object id as the callback state to correlate back with the status polling requests.
+        var context = await this.requestClient.RequestIssuanceAsync(credentialType, absoluteCallbackUrl, claims, callbackState: callbackState, includeQRCode: true, pinLength: pinLength);
 
         return new IssuanceApiResponse(context);
+    }
+
+    private string GetUserObjectId()
+    {
+        var userObjectIdClaim = this.User.Claims.Single(c => string.Equals(c.Type, ObjectIdClaimType, StringComparison.OrdinalIgnoreCase));
+        return userObjectIdClaim.Value;
+    }
+
+    private string GetUserCredentialType()
+    {
+        // Determine the credential type to issue based on the user's role.
+        if (this.appConfiguration.StaffAppRoleName != null && this.User.HasClaim(RolesClaimType, this.appConfiguration.StaffAppRoleName))
+        {
+            // The user is staff.
+            ArgumentNullException.ThrowIfNull(this.appConfiguration.StaffCredentialType);
+            return this.appConfiguration.StaffCredentialType;
+        }
+        else if (this.appConfiguration.StudentAppRoleName != null && this.User.HasClaim(RolesClaimType, this.appConfiguration.StudentAppRoleName))
+        {
+            // The user is student.
+            ArgumentNullException.ThrowIfNull(this.appConfiguration.StudentCredentialType);
+            return this.appConfiguration.StudentCredentialType;
+        }
+        else
+        {
+            // If no roles are present, assume the user is a student anyway so that configuration of
+            // the sample can be kept simple without requiring app roles to be defined and assigned.
+            ArgumentNullException.ThrowIfNull(this.appConfiguration.StudentCredentialType);
+            return this.appConfiguration.StudentCredentialType;
+        }
     }
 
     [HttpPost("api/issuance/callback")]
@@ -73,7 +115,7 @@ public class IssuanceController : ControllerBase
         return Ok();
     }
 
-    // [Authorize] // TODO: Ensure user is logged in
+    [Authorize]
     [HttpGet("api/issuance/status")]
     public async Task<IssuanceStatus> IssuanceResponse(string requestId)
     {
@@ -87,14 +129,18 @@ public class IssuanceController : ControllerBase
             var cachedMessage = JsonSerializer.Deserialize<IssuanceCallbackEventMessage>(cachedMessageString);
             if (cachedMessage != null)
             {
-                // TODO: Check that the currently logged in user requested the issuance for this requestId.
-                // Likely this needs the user's oid as the callback state to correlate.
-                // If the credential was successfully issued, return the credential details to the client.
-                return new IssuanceStatus
+                // For added security, check that the currently logged in user is the same user that
+                // requested the issuance for this requestId, based on the user's object id which was
+                // set as the callback state.
+                if (cachedMessage.State == GetUserObjectId())
                 {
-                    Status = cachedMessage.Code,
-                    Message = cachedMessage.Error?.Message
-                };
+                    // If the credential was successfully issued, return the credential details to the client.
+                    return new IssuanceStatus
+                    {
+                        Status = cachedMessage.Code,
+                        Message = cachedMessage.Error?.Message
+                    };
+                }
             }
         }
 
