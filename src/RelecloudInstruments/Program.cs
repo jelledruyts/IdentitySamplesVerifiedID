@@ -1,6 +1,10 @@
 using MicrosoftEntra.VerifiedId.Client;
+using RelecloudInstruments;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add app configuration.
+builder.Services.Configure<AppConfiguration>(builder.Configuration.GetSection("RelecloudInstruments"));
 
 // Add Verified ID issuance services.
 builder.Services.AddVerifiedIdPresentation(builder.Configuration.GetSection("EntraVerifiedId"));

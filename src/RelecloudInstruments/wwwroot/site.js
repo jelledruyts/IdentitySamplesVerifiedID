@@ -10,9 +10,9 @@
         document.getElementById('responsePanel').style.display = 'none';
     }
 
-    document.getElementById('presentCredential').addEventListener('click', () => {
+    function sendPresentationRequest(type) {
         // Send a presentation request.
-        fetch('api/presentation/request', { method: 'POST' }).then(response => {
+        fetch('api/presentation/request?type=' + type, { method: 'POST' }).then(response => {
             if (!response.ok) {
                 // Something went wrong while sending the presentation request, show an error message.
                 showApiError(response);
@@ -49,11 +49,7 @@
                                         clearInterval(checkStatus);
 
                                         // The verified credential was presented.
-                                        var isStaff = statusResponseBody.credentialTypes.some(t => t == 'Verified Staff');
-                                        var isStudent = statusResponseBody.credentialTypes.some(t => t == 'Verified Student');
-                                        var customerType = isStaff ? 'verified staff' : (isStudent ? 'verified student' : 'valued customer');
-                                        var discount = isStaff ? 7 : (isStudent ? 5 : 0);
-                                        statusMessage.innerText = `Thank you for proving that you are a ${customerType}, you get a ${discount}% discount!`;
+                                        statusMessage.innerText = statusResponseBody.message;
                                     }
                                 })
                             }
@@ -66,5 +62,13 @@
         }).catch(error => {
             console.log(error.message);
         });
+    }
+
+    document.getElementById('presentStudentCredential').addEventListener('click', () => {
+        sendPresentationRequest('student');
+    });
+
+    document.getElementById('presentStaffCredential').addEventListener('click', () => {
+        sendPresentationRequest('staff');
     });
 })();

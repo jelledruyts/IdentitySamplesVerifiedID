@@ -26,7 +26,7 @@ public class PresentationRequestClient : BaseRequestClient
         };
 
         // Set the requested credentials from configuration.
-        request.Presentation.RequestedCredentials = this.options.RequestedCredentials;
+        request.Presentation.RequestedCredentials = new List<RequestedCredential>(this.options.RequestedCredentials);
 
         // Add explicitly requested credentials, if any.
         if (requestedCredentials != null)

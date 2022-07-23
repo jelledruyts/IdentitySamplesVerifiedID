@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using MicrosoftEntra.VerifiedId.Client;
 using MicrosoftEntra.VerifiedId.Client.Models;
 using RelecloudInstruments.Models;
@@ -12,13 +13,15 @@ public class PresentationController : ControllerBase
 {
     private readonly ILogger<PresentationController> logger;
     private readonly PresentationRequestClient requestClient;
+    private readonly AppConfiguration appConfiguration;
     private readonly IDistributedCache distributedCache;
     private readonly DistributedCacheEntryOptions distributedCacheOptions;
 
-    public PresentationController(ILogger<PresentationController> logger, PresentationRequestClient requestClient, IDistributedCache distributedCache)
+    public PresentationController(ILogger<PresentationController> logger, IOptions<AppConfiguration> appConfiguration, PresentationRequestClient requestClient, IDistributedCache distributedCache)
     {
         this.logger = logger;
         this.requestClient = requestClient;
+        this.appConfiguration = appConfiguration.Value;
         this.distributedCache = distributedCache;
         this.distributedCacheOptions = new DistributedCacheEntryOptions
         {
@@ -29,15 +32,22 @@ public class PresentationController : ControllerBase
     }
 
     [HttpPost("api/presentation/request")]
-    public async Task<PresentationApiResponse> PresentationRequest()
+    public async Task<PresentationApiResponse> PresentationRequest(string type)
     {
+        ArgumentNullException.ThrowIfNull(this.appConfiguration.VerifiedCredentialIssuer);
+
         // Get an absolute URL to the Callback action.
         var absoluteCallbackUrl = Url.Action(nameof(PresentationCallback), null, null, "https")!;
 
         // Send a presentation request to the Verifiable Credentials Service.
-        // TODO: Button per presentation type (?type=student/staff).
-        // TODO: Don't use RequestedCredentials in config but simplify with just issuer-did, student and staff credential type.
-        var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, includeQRCode: true);
+        var credentialType = string.Equals(type, "staff", StringComparison.OrdinalIgnoreCase) ? this.appConfiguration.StaffCredentialType : this.appConfiguration.StudentCredentialType;
+        var requestedCredential = new RequestedCredential
+        {
+            Type = credentialType,
+            Purpose = $"Please prove that you have the \"{credentialType}\" credential.",
+            AcceptedIssuers = new[] { this.appConfiguration.VerifiedCredentialIssuer }
+        };
+        var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, includeQRCode: true, requestedCredentials: new[] { requestedCredential });
 
         return new PresentationApiResponse(response);
     }
@@ -72,14 +82,30 @@ public class PresentationController : ControllerBase
             var cachedMessage = JsonSerializer.Deserialize<PresentationCallbackEventMessage>(cachedMessageString);
             if (cachedMessage != null)
             {
-                // If the presentation was successfully verified, return the credential details to the client.
-                // Only consider the first issuer for simplicity as this sample doesn't request multiple issuers.
-                // TODO: API sets discount depending on (configured) type, not browser app.
-                var issuer = cachedMessage.Issuers.FirstOrDefault();
+                var message = default(string);
+                if (string.Equals(cachedMessage.Code, VerifiedIdConstants.CallbackCodes.PresentationVerified, StringComparison.OrdinalIgnoreCase))
+                {
+                    // If the presentation was successfully verified, determine the discount based on the credential type.
+                    var credentialTypes = cachedMessage.Issuers.SelectMany(i => i.Type).ToArray();
+                    if (credentialTypes.Any(t => string.Equals(t, this.appConfiguration.StaffCredentialType, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        // Staff get 7% discount.
+                        message = "Thank you for proving that you are verified staff, you get a 7% discount!";
+                    }
+                    else if (credentialTypes.Any(t => string.Equals(t, this.appConfiguration.StudentCredentialType, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        // Students get 5% discount.
+                        message = "Thank you for proving that you are a verified student, you get a 5% discount!";
+                    }
+                    else
+                    {
+                        message = "Thank you for proving that you care about verifiable credentials, you get a 3% discount!";
+                    }
+                }
                 return new PresentationStatus
                 {
                     Status = cachedMessage.Code,
-                    CredentialTypes = issuer?.Type,
+                    Message = message
                 };
             }
         }
