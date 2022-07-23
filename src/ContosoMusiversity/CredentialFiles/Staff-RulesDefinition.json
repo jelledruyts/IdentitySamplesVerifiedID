@@ -1,0 +1,35 @@
+{
+  "attestations": {
+    "idTokenHints": [
+      {
+        "mapping": [
+          {
+            "outputClaim": "userName",
+            "required": true,
+            "inputClaim": "unique_name",
+            "indexed": true
+          },
+          {
+            "outputClaim": "firstName",
+            "required": true,
+            "inputClaim": "given_name",
+            "indexed": false
+          },
+          {
+            "outputClaim": "lastName",
+            "required": true,
+            "inputClaim": "family_name",
+            "indexed": false
+          }
+        ],
+        "required": false
+      }
+    ]
+  },
+  "validityInterval": 2592000,
+  "vc": {
+    "type": [
+      "Verified Staff"
+    ]
+  }
+}

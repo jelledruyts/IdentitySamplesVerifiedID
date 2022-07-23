@@ -49,9 +49,10 @@
                                         clearInterval(checkStatus);
 
                                         // The verified credential was presented.
+                                        var isStaff = statusResponseBody.credentialTypes.some(t => t == 'Verified Staff');
                                         var isStudent = statusResponseBody.credentialTypes.some(t => t == 'Verified Student');
-                                        var customerType = isStudent ? 'verified student' : 'valued customer';
-                                        var discount = isStudent ? 5 : 0;
+                                        var customerType = isStaff ? 'verified staff' : (isStudent ? 'verified student' : 'valued customer');
+                                        var discount = isStaff ? 7 : (isStudent ? 5 : 0);
                                         statusMessage.innerText = `Thank you for proving that you are a ${customerType}, you get a ${discount}% discount!`;
                                     }
                                 })

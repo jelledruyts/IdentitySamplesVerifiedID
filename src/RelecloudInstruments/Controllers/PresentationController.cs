@@ -35,6 +35,8 @@ public class PresentationController : ControllerBase
         var absoluteCallbackUrl = Url.Action(nameof(PresentationCallback), null, null, "https")!;
 
         // Send a presentation request to the Verifiable Credentials Service.
+        // TODO: Button per presentation type (?type=student/staff).
+        // TODO: Don't use RequestedCredentials in config but simplify with just issuer-did, student and staff credential type.
         var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, includeQRCode: true);
 
         return new PresentationApiResponse(response);
@@ -72,6 +74,7 @@ public class PresentationController : ControllerBase
             {
                 // If the presentation was successfully verified, return the credential details to the client.
                 // Only consider the first issuer for simplicity as this sample doesn't request multiple issuers.
+                // TODO: API sets discount depending on (configured) type, not browser app.
                 var issuer = cachedMessage.Issuers.FirstOrDefault();
                 return new PresentationStatus
                 {
