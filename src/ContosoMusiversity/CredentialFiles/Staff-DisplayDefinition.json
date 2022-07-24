@@ -1,35 +1,30 @@
 {
-    "locale": "en-US",
-    "card": {
-      "title": "Verified Staff",
-      "issuedBy": "Contoso Musiversity",
-      "backgroundColor": "#4b0082",
-      "textColor": "#ffffff",
-      "description": "Use your verified credential to prove to anyone that you are staff at Contoso Musiversity.",
-      "logo": {
-        "description": "Verified Staff Logo",
-        "uri": "https://contoso.org/logo.png"
-      }
+  "locale": "en-US",
+  "card": {
+    "title": "Verified Staff",
+    "issuedBy": "Contoso Musiversity",
+    "backgroundColor": "#4b0082",
+    "textColor": "#ffffff",
+    "description": "Use your verified credential to prove to anyone that you are staff at Contoso Musiversity.",
+    "logo": {
+      "description": "Verified Staff Logo",
+      "uri": "https://contoso.org/logo.png"
+    }
+  },
+  "consent": {
+    "title": "Do you want to get your verified credential?",
+    "instructions": "Please accept your Verified Staff card."
+  },
+  "claims": [
+    {
+      "claim": "vc.credentialSubject.userName",
+      "label": "User name",
+      "type": "String"
     },
-    "consent": {
-      "title": "Do you want to get your verified credential?",
-      "instructions": "Please accept your Verified Staff card."
-    },
-    "claims": [
-      {
-        "claim": "vc.credentialSubject.userName",
-        "label": "User name",
-        "type": "String"
-      },
-      {
-        "claim": "vc.credentialSubject.firstName",
-        "label": "First name",
-        "type": "String"
-      },
-      {
-        "claim": "vc.credentialSubject.lastName",
-        "label": "Last name",
-        "type": "String"
-      }
-    ]
+    {
+      "claim": "vc.credentialSubject.name",
+      "label": "Display Name",
+      "type": "String"
+    }
+  ]
 }

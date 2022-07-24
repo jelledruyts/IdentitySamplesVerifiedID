@@ -6,19 +6,13 @@
           {
             "outputClaim": "userName",
             "required": true,
-            "inputClaim": "unique_name",
+            "inputClaim": "email",
             "indexed": true
           },
           {
-            "outputClaim": "firstName",
+            "outputClaim": "name",
             "required": true,
-            "inputClaim": "given_name",
-            "indexed": false
-          },
-          {
-            "outputClaim": "lastName",
-            "required": true,
-            "inputClaim": "family_name",
+            "inputClaim": "name",
             "indexed": false
           }
         ],

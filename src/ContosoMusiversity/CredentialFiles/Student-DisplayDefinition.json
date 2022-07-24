@@ -1,35 +1,30 @@
 {
-    "locale": "en-US",
-    "card": {
-      "title": "Verified Student",
-      "issuedBy": "Contoso Musiversity",
-      "backgroundColor": "#008ad8",
-      "textColor": "#ffffff",
-      "description": "Use your verified credential to prove to anyone that you are a student at Contoso Musiversity.",
-      "logo": {
-        "description": "Verified Student Logo",
-        "uri": "https://contoso.org/logo.png"
-      }
+  "locale": "en-US",
+  "card": {
+    "title": "Verified Student",
+    "issuedBy": "Contoso Musiversity",
+    "backgroundColor": "#008ad8",
+    "textColor": "#ffffff",
+    "description": "Use your verified credential to prove to anyone that you are a student at Contoso Musiversity.",
+    "logo": {
+      "description": "Verified Student Logo",
+      "uri": "https://contoso.org/logo.png"
+    }
+  },
+  "consent": {
+    "title": "Do you want to get your verified credential?",
+    "instructions": "Please accept your Verified Student card."
+  },
+  "claims": [
+    {
+      "claim": "vc.credentialSubject.userName",
+      "label": "User name",
+      "type": "String"
     },
-    "consent": {
-      "title": "Do you want to get your verified credential?",
-      "instructions": "Please accept your Verified Student card."
-    },
-    "claims": [
-      {
-        "claim": "vc.credentialSubject.userName",
-        "label": "User name",
-        "type": "String"
-      },
-      {
-        "claim": "vc.credentialSubject.firstName",
-        "label": "First name",
-        "type": "String"
-      },
-      {
-        "claim": "vc.credentialSubject.lastName",
-        "label": "Last name",
-        "type": "String"
-      }
-    ]
+    {
+      "claim": "vc.credentialSubject.name",
+      "label": "Display name",
+      "type": "String"
+    }
+  ]
 }

@@ -38,17 +38,39 @@ public class IssuanceController : ControllerBase
     [HttpPost("api/issuance/request")]
     public async Task<IssuanceApiResponse> IssuanceRequest([FromBody] IssuanceApiRequest request)
     {
+        ArgumentNullException.ThrowIfNull(this.appConfiguration.StaffCredentialType);
+        ArgumentNullException.ThrowIfNull(this.appConfiguration.StudentCredentialType);
+
         // Get an absolute URL to the Callback action.
         var absoluteCallbackUrl = Url.Action(nameof(IssuanceCallback), null, null, "https")!;
 
+        // Determine the credential type to issue based on the user's role.
+        // If no roles are present, assume the user is a student anyway so that configuration of
+        // the sample can be kept simple without requiring app roles to be defined and assigned.
+        var isStaff = this.appConfiguration.StaffAppRoleName != null && this.User.HasClaim(RolesClaimType, this.appConfiguration.StaffAppRoleName);
+        var credentialType = isStaff ? this.appConfiguration.StaffCredentialType : this.appConfiguration.StudentCredentialType;
+
         // Define the claims that will be part of the issued credential.
-        var claims = new Dictionary<string, string>();
-        foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims)
+        var claims = default(Dictionary<string, string>);
+        if (isStaff)
         {
-            var userClaim = this.User.Claims.FirstOrDefault(c => string.Equals(c.Type, verifiedCredentialInputClaim, StringComparison.OrdinalIgnoreCase));
-            if (userClaim != null)
+            // The Verified Staff credential uses the id_token flow, which means the application should not
+            // send any claims but they will be taken from the id_token as part of the login which is triggered
+            // when acquiring the verifiable credential.
+            claims = null;
+        }
+        else
+        {
+            // The Verified Student credential uses the id_token_hint flow, which means the application
+            // that requests the issuance must send the claims to include in the verifiable credential.
+            claims = new Dictionary<string, string>();
+            foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims)
             {
-                claims[verifiedCredentialInputClaim] = userClaim.Value;
+                var userClaim = this.User.Claims.FirstOrDefault(c => string.Equals(c.Type, verifiedCredentialInputClaim, StringComparison.OrdinalIgnoreCase));
+                if (userClaim != null)
+                {
+                    claims[verifiedCredentialInputClaim] = userClaim.Value;
+                }
             }
         }
 
@@ -56,9 +78,8 @@ public class IssuanceController : ControllerBase
         var pinLength = request.UsePinCode ? (int?)4 : null;
 
         // Send an issuance request to the Verifiable Credentials Service.
-        var credentialType = GetUserCredentialType();
         var callbackState = GetUserObjectId(); // Use the user's object id as the callback state to correlate back with the status polling requests.
-        var context = await this.requestClient.RequestIssuanceAsync(credentialType, absoluteCallbackUrl, claims, callbackState: callbackState, includeQRCode: true, pinLength: pinLength);
+        var context = await this.requestClient.RequestIssuanceAsync(credentialType, absoluteCallbackUrl, claims: claims, callbackState: callbackState, includeQRCode: true, pinLength: pinLength);
 
         return new IssuanceApiResponse(context);
     }
@@ -67,30 +88,6 @@ public class IssuanceController : ControllerBase
     {
         var userObjectIdClaim = this.User.Claims.Single(c => string.Equals(c.Type, ObjectIdClaimType, StringComparison.OrdinalIgnoreCase));
         return userObjectIdClaim.Value;
-    }
-
-    private string GetUserCredentialType()
-    {
-        // Determine the credential type to issue based on the user's role.
-        if (this.appConfiguration.StaffAppRoleName != null && this.User.HasClaim(RolesClaimType, this.appConfiguration.StaffAppRoleName))
-        {
-            // The user is staff.
-            ArgumentNullException.ThrowIfNull(this.appConfiguration.StaffCredentialType);
-            return this.appConfiguration.StaffCredentialType;
-        }
-        else if (this.appConfiguration.StudentAppRoleName != null && this.User.HasClaim(RolesClaimType, this.appConfiguration.StudentAppRoleName))
-        {
-            // The user is student.
-            ArgumentNullException.ThrowIfNull(this.appConfiguration.StudentCredentialType);
-            return this.appConfiguration.StudentCredentialType;
-        }
-        else
-        {
-            // If no roles are present, assume the user is a student anyway so that configuration of
-            // the sample can be kept simple without requiring app roles to be defined and assigned.
-            ArgumentNullException.ThrowIfNull(this.appConfiguration.StudentCredentialType);
-            return this.appConfiguration.StudentCredentialType;
-        }
     }
 
     [HttpPost("api/issuance/callback")]

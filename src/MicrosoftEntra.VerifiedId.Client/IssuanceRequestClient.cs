@@ -26,11 +26,8 @@ public class IssuanceRequestClient : BaseRequestClient
         {
             Type = credentialType,
             Manifest = GetManifestUrl(credentialType),
+            Claims = claims
         };
-        if (claims != null)
-        {
-            request.Issuance.Claims = claims;
-        }
         var context = new IssuanceRequestContext(request);
 
         // Check if a PIN was either explicitly requested or otherwise statically configured.

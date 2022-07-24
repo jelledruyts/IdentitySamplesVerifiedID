@@ -1,28 +1,25 @@
 {
   "attestations": {
-    "idTokenHints": [
+    "idTokens": [
       {
         "mapping": [
           {
             "outputClaim": "userName",
             "required": true,
-            "inputClaim": "unique_name",
+            "inputClaim": "email",
             "indexed": true
           },
           {
-            "outputClaim": "firstName",
+            "outputClaim": "name",
             "required": true,
-            "inputClaim": "given_name",
-            "indexed": false
-          },
-          {
-            "outputClaim": "lastName",
-            "required": true,
-            "inputClaim": "family_name",
+            "inputClaim": "name",
             "indexed": false
           }
         ],
-        "required": false
+        "configuration": "https://login.microsoftonline.com/<tenant-id>/v2.0/.well-known/openid-configuration",
+        "clientId": "<client-id>",
+        "redirectUri": "vcclient://openid/",
+        "scope": "openid profile email"
       }
     ]
   },
