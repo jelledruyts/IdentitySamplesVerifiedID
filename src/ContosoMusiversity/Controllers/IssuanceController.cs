@@ -42,7 +42,6 @@ public class IssuanceController : ControllerBase
         var absoluteCallbackUrl = Url.Action(nameof(IssuanceCallback), null, null, "https")!;
 
         // Define the claims that will be part of the issued credential.
-        // TODO: Why not just send everything over and get rid of config?
         var claims = new Dictionary<string, string>();
         foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims)
         {
@@ -118,7 +117,7 @@ public class IssuanceController : ControllerBase
 
     [Authorize]
     [HttpGet("api/issuance/status")]
-    public async Task<IssuanceStatus> IssuanceResponse(string requestId)
+    public async Task<IActionResult> IssuanceResponse(string requestId)
     {
         // See if any callback message has arrived in the background, in which case it would
         // have been added to the distributed cache.
@@ -133,23 +132,24 @@ public class IssuanceController : ControllerBase
                 // For added security, check that the currently logged in user is the same user that
                 // requested the issuance for this requestId, based on the user's object id which was
                 // set as the callback state.
-                // TODO: Unauthorized if user doesn't match.
-                if (cachedMessage.State == GetUserObjectId())
+                if (cachedMessage.State != GetUserObjectId())
                 {
-                    // If the credential was successfully issued, return the credential details to the client.
-                    return new IssuanceStatus
-                    {
-                        Status = cachedMessage.Code,
-                        Message = cachedMessage.Error?.Message
-                    };
+                    return Unauthorized();
                 }
+
+                // If the credential was successfully issued, return the credential details to the client.
+                return Ok(new IssuanceStatus
+                {
+                    Status = cachedMessage.Code,
+                    Message = cachedMessage.Error?.Message
+                });
             }
         }
 
         // No callback was received, which means the request is still pending.
-        return new IssuanceStatus
+        return Ok(new IssuanceStatus
         {
             Status = "pending"
-        };
+        });
     }
 }
