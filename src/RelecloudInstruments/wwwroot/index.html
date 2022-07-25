@@ -6,28 +6,329 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Relecloud Instruments</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="site.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="site.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container py-5">
-    <div>
-      <h1>Relecloud Instruments</h1>
+  <div class="container py-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Relecloud Instruments</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Shop
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">All Products</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Popular Items</a></li>
+                <li><a class="dropdown-item" href="#">New Arrivals</a></li>
+              </ul>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Look for instruments" aria-label="Search">
+            <button class="btn btn-outline-secondary me-2" type="submit">
+              Search
+            </button>
+          </form>
+          <form class="d-flex">
+            <button class="btn btn-outline-secondary" type="submit">
+              <i class="bi bi-cart-fill me-1"></i>
+              Cart
+              <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="mt-3">
       <form>
-        <button type="button" id="presentStudentCredential" class="btn btn-primary ml-2">Present Student Credential</button>
-        <button type="button" id="presentStaffCredential" class="btn btn-primary ml-2">Present Staff Credential</button>
+        <div class="alert alert-info">
+          <div>
+            <i class="bi bi-info-square"></i>
+            Did you know that you can get a discount if you are a verified student or staff at
+            a music education institution that we trust?
+          </div>
+          <div class="mt-2">
+            Please present a verified credential to prove that you are a
+            <button type="button" id="presentStudentCredential" class="btn btn-success ml-2">Verified Student</button>
+            or
+            <button type="button" id="presentStaffCredential" class="btn btn-success ml-2">Verified Staff</button>
+            at a respected institution.
+          </div>
+        </div>
       </form>
-      <div id="errorMessage" style="display: none;" class="alert alert-danger mt-3"></div>
-      <div id="responsePanel" style="display: none;" class="mt-3">
-        <div id="scanPanel">
+      <div id="errorMessage" class="alert alert-danger mt-3"></div>
+      <div id="responsePanel" class="mt-3">
+        <div id="scanPanel" class="border rounded p-3">
           <p class="lead">Scan with Microsoft Authenticator</p>
           <div>
-            <img id="qrCodeImage" style="width: 300px; height: 300px;" alt="Scan me!" />
+            <img id="qrCodeImage" alt="Scan me!" />
           </div>
           <a id="deepLink" class="mt-1">Or open directly on Authenticator on mobile</a>
         </div>
-        <div id="statusMessage" style="display: none;" class="alert alert-info lead mt-3"></div>
+        <div id="statusMessage" class="alert alert-info lead mt-3"></div>
         <div class="mt-1 small">Request ID: <code id="requestId"></code></div>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-1">
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Product image-->
+          <a title="&quot;Photo: © Copyright Steinway &amp; Sons&quot;, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Steinway_%26_Sons_concert_grand_piano,_model_D-274,_manufactured_at_Steinway%27s_factory_in_Hamburg,_Germany.png"
+            target="_blank">
+            <img class="card-img-top" width="450"
+              alt="Steinway &amp; Sons concert grand piano, model D-274, manufactured at Steinway&#039;s factory in Hamburg, Germany"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Steinway_%26_Sons_concert_grand_piano%2C_model_D-274%2C_manufactured_at_Steinway%27s_factory_in_Hamburg%2C_Germany.png/512px-Steinway_%26_Sons_concert_grand_piano%2C_model_D-274%2C_manufactured_at_Steinway%27s_factory_in_Hamburg%2C_Germany.png">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Concert grand piano</h5>
+              <!-- Product reviews-->
+              <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+              </div>
+              <!-- Product price-->
+              $40,000.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Sale badge-->
+          <div class="badge bg-dark text-white position-absolute badge-topright">Sale</div>
+          <!-- Product image-->
+          <a title="&quot;Photo: © Copyright Steinway &amp; Sons&quot;, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Steinway_%26_Sons_upright_piano,_model_K-52_(mahogany_finish),_manufactured_at_Steinway%27s_factory_in_New_York_City.jpg"
+            target="_blank">
+            <img class="card-img-top" width="450"
+              alt="Steinway &amp; Sons upright piano, model K-52 (mahogany finish), manufactured at Steinway&#039;s factory in New York City"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Steinway_%26_Sons_upright_piano%2C_model_K-52_%28mahogany_finish%29%2C_manufactured_at_Steinway%27s_factory_in_New_York_City.jpg/512px-Steinway_%26_Sons_upright_piano%2C_model_K-52_%28mahogany_finish%29%2C_manufactured_at_Steinway%27s_factory_in_New_York_City.jpg">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Upright piano</h5>
+              <!-- Product reviews-->
+              <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star"></div>
+              </div>
+              <!-- Product price-->
+              <span class="text-muted text-decoration-line-through">$20,000.00</span>
+              $18,000.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Sale badge-->
+          <div class="badge bg-dark text-white position-absolute badge-topright">Sale</div>
+          <!-- Product image-->
+          <a title="Muzyczny.pl, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Stagg_TRI-8_triangle.jpg" target="_blank">
+            <img class="card-img-top" width="450" alt="Stagg TRI-8 triangle"
+              src="https://upload.wikimedia.org/wikipedia/commons/0/02/Stagg_TRI-8_triangle.jpg">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Triangle</h5>
+              <!-- Product price-->
+              <span class="text-muted text-decoration-line-through">$50.00</span>
+              $25.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Product image-->
+          <a title="irish10567 from Little Falls, NJ, USA, CC BY 2.0 &lt;https://creativecommons.org/licenses/by/2.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Gibson_Les_Paul_Desert_Burst_(2008-10-20_18.49.45_by_irish10567).jpg"
+            target="_blank">
+            <img class="card-img-top" width="450" alt="Gibson Les Paul Desert Burst (2008-10-20 18.49.45 by irish10567)"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Gibson_Les_Paul_Desert_Burst_%282008-10-20_18.49.45_by_irish10567%29.jpg/256px-Gibson_Les_Paul_Desert_Burst_%282008-10-20_18.49.45_by_irish10567%29.jpg">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Electric Guitar</h5>
+              <!-- Product reviews-->
+              <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+              </div>
+              <!-- Product price-->
+              $4000.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Sale badge-->
+          <div class="badge bg-dark text-white position-absolute badge-topright">Sale</div>
+          <!-- Product image-->
+          <a title="אל120, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Drums_set_brad_wilk.jpg" target="_blank">
+            <img class="card-img-top" width="450" alt="Drums set brad wilk"
+              src="https://upload.wikimedia.org/wikipedia/commons/6/68/Drums_set_brad_wilk.jpg">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Drum set</h5>
+              <!-- Product price-->
+              <span class="text-muted text-decoration-line-through">$5,000.00</span>
+              $4,750.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Product image-->
+          <a title="Mark Helms from Penrose, CO, United States, CC BY 2.0 &lt;https://creativecommons.org/licenses/by/2.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:6_string_acoustic_guitar_body_(2003-01-01_by_Mark_Helms).jpg"
+            target="_blank">
+            <img class="card-img-top" width="450" alt="6 string acoustic guitar body (2003-01-01 by Mark Helms)"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/6_string_acoustic_guitar_body_%282003-01-01_by_Mark_Helms%29.jpg/512px-6_string_acoustic_guitar_body_%282003-01-01_by_Mark_Helms%29.jpg">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Acoustic guitar</h5>
+              <!-- Product price-->
+              $240.00 - $320.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Sale badge-->
+          <div class="badge bg-dark text-white position-absolute badge-topright">Sale</div>
+          <!-- Product image-->
+          <a title="Pianoplonkers, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:German,_maple_Violin.JPG" target="_blank">
+            <img class="card-img-top" width="450" alt="German, maple Violin"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/German%2C_maple_Violin.JPG/512px-German%2C_maple_Violin.JPG">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Violin</h5>
+              <!-- Product reviews-->
+              <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star"></div>
+              </div>
+              <!-- Product price-->
+              <span class="text-muted text-decoration-line-through">$990.00</span>
+              $950.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Product image-->
+          <a title="Buffet Crampon, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons"
+            href="https://commons.wikimedia.org/wiki/File:Tuba_Melton_Meinl_Weston.png" target="_blank">
+            <img class="card-img-top" width="450" alt="Tuba Melton Meinl Weston"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Tuba_Melton_Meinl_Weston.png/512px-Tuba_Melton_Meinl_Weston.png">
+          </a>
+          <!-- Product details-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Product name-->
+              <h5 class="fw-bolder">Tuba</h5>
+              <!-- Product reviews-->
+              <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star"></div>
+                <div class="bi-star"></div>
+              </div>
+              <!-- Product price-->
+              $400.00
+            </div>
+          </div>
+          <!-- Product actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

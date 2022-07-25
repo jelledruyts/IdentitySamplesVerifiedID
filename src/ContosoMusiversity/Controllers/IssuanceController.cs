@@ -52,12 +52,16 @@ public class IssuanceController : ControllerBase
 
         // Define the claims that will be part of the issued credential.
         var claims = default(Dictionary<string, string>);
+        var pinLength = default(int?);
         if (isStaff)
         {
             // The Verified Staff credential uses the id_token flow, which means the application should not
             // send any claims but they will be taken from the id_token as part of the login which is triggered
             // when acquiring the verifiable credential.
             claims = null;
+
+            // A PIN isn't needed (or even allowed) in this case.
+            pinLength = null;
         }
         else
         {
@@ -72,10 +76,10 @@ public class IssuanceController : ControllerBase
                     claims[verifiedCredentialInputClaim] = userClaim.Value;
                 }
             }
-        }
 
-        // If a PIN code was requested, use 4 digits.
-        var pinLength = request.UsePinCode ? (int?)4 : null;
+            // If a PIN code was requested, use 4 digits.
+            pinLength = request.UsePinCode ? (int?)4 : null;
+        }
 
         // Send an issuance request to the Verifiable Credentials Service.
         var callbackState = GetUserObjectId(); // Use the user's object id as the callback state to correlate back with the status polling requests.

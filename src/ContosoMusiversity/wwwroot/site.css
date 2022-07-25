@@ -1,1 +1,9 @@
-﻿
+﻿/* Initially hide certain elements */
+#userProfilePanel, #errorMessage, #responsePanel {
+    display: none;
+}
+
+#qrCodeImage {
+    width: 300px;
+    height: 300px;
+}

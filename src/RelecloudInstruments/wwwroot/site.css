@@ -1,1 +1,14 @@
-﻿
+﻿/* Initially hide certain elements */
+#errorMessage, #responsePanel, #statusMessage {
+    display: none;
+}
+
+#qrCodeImage {
+    width: 300px;
+    height: 300px;
+}
+
+.badge-topright {
+    top: 0.5rem;
+    right: 0.5rem;
+}

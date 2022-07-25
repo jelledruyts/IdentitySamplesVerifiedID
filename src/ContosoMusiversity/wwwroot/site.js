@@ -13,9 +13,10 @@
     var logInButton = document.getElementById('logIn');
     logInButton.addEventListener('click', () => {
         authService.login().then(account => {
-            document.getElementById('userName').innerText = `Welcome, ${account.name}!`;
-            logInButton.style.display = 'none';
-            document.getElementById('verifiedCredentialPanel').style.display = 'block';
+            document.getElementById('userName').innerText = account.name;
+            document.getElementById('userEmail').innerText = account.username;
+            document.getElementById('logInPanel').style.display = 'none';
+            document.getElementById('userProfilePanel').style.display = 'block';
         }).catch(error => {
             console.log('Could not login: ' + error);
         });
