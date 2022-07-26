@@ -1,0 +1,240 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appServicePlanName": {
+            "type": "String",
+            "metadata": {
+                "description": "The App Service Plan will contain both the Contoso Musiversity and Relecloud Instruments web apps"
+            }
+        },
+        "contosoMusiversityAppServiceWebAppName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Contoso Musiversity web app (must be globally unique)"
+            }
+        },
+        "contosoMusiversityDidAuthority": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Decentralized identifier (DID) of the issuer tenant (Contoso)"
+            }
+        },
+        "contosoMusiversityWellKnownDidJsonContents": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The JSON contents of the '/.well-known/did.json' file of the issuer tenant (Contoso); only needed when using the 'Web' trust system, not required when using 'ION'"
+            }
+        },
+        "contosoMusiversityWellKnownDidConfigurationJsonContents": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The JSON contents of the '/.well-known/did-configuration.json' file of the issuer tenant (Contoso)"
+            }
+        },
+        "contosoMusiversityTenantId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Azure AD Tenant ID of the issuer tenant (Contoso)"
+            }
+        },
+        "contosoMusiversityClientId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Client ID of the Contoso Musiversity app registration in Azure AD"
+            }
+        },
+        "contosoMusiversityClientSecret": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Client Secret of the Contoso Musiversity app registration in Azure AD"
+            }
+        },
+        "contosoMusiversityApiKey": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "An optional random API key which is used to secure the communication between the Contoso Musiversity application and the Verified ID service"
+            }
+        },
+        "relecloudInstrumentsAppServiceWebAppName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Relecloud Instruments web app (must be globally unique)"
+            }
+        },
+        "relecloudInstrumentsDidAuthority": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Decentralized identifier (DID) of the verifier tenant (Relecloud)"
+            }
+        },
+        "relecloudInstrumentsWellKnownDidJsonContents": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The JSON contents of the '/.well-known/did.json' file of the verifier tenant (Relecloud); only needed when using the 'Web' trust system, not required when using 'ION'"
+            }
+        },
+        "relecloudInstrumentsWellKnownDidConfigurationJsonContents": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The JSON contents of the '/.well-known/did-configuration.json' file of the verifier tenant (Relecloud)"
+            }
+        },
+        "relecloudInstrumentsTenantId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Azure AD Tenant ID of the verifier tenant (Relecloud)"
+            }
+        },
+        "relecloudInstrumentsClientId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Client ID of the Relecloud Instruments app registration in Azure AD"
+            }
+        },
+        "relecloudInstrumentsClientSecret": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The Client Secret of the Relecloud Instruments app registration in Azure AD"
+            }
+        },
+        "relecloudInstrumentsApiKey": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "An optional random API key which is used to secure the communication between the Contoso Musiversity application and the Verified ID service"
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-08-01",
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[parameters('appServicePlanName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "linux",
+            "sku": {
+                "Name": "P1v3"
+            },
+            "properties": {
+                "name": "[parameters('appServicePlanName')]",
+                "reserved": true
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[parameters('contosoMusiversityAppServiceWebAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+                            "value": "false"
+                        },
+                        {
+                            "name": "EntraVerifiedId__DidAuthority",
+                            "value": "[parameters('contosoMusiversityDidAuthority')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__WellKnownDidJsonContents",
+                            "value": "[parameters('contosoMusiversityWellKnownDidJsonContents')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__WellKnownDidConfigurationJsonContents",
+                            "value": "[parameters('contosoMusiversityWellKnownDidConfigurationJsonContents')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__TenantId",
+                            "value": "[parameters('contosoMusiversityTenantId')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ClientId",
+                            "value": "[parameters('contosoMusiversityClientId')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ClientSecret",
+                            "value": "[parameters('contosoMusiversityClientSecret')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ApiKey",
+                            "value": "[parameters('contosoMusiversityApiKey')]"
+                        }
+                    ],
+                    "linuxFxVersion": "DOCKER|ghcr.io/jelledruyts/contosomusiversity:latest"
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-08-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[parameters('relecloudInstrumentsAppServiceWebAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+                            "value": "false"
+                        },
+                        {
+                            "name": "EntraVerifiedId__DidAuthority",
+                            "value": "[parameters('relecloudInstrumentsDidAuthority')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__WellKnownDidJsonContents",
+                            "value": "[parameters('relecloudInstrumentsWellKnownDidJsonContents')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__WellKnownDidConfigurationJsonContents",
+                            "value": "[parameters('relecloudInstrumentsWellKnownDidConfigurationJsonContents')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__TenantId",
+                            "value": "[parameters('relecloudInstrumentsTenantId')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ClientId",
+                            "value": "[parameters('relecloudInstrumentsClientId')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ClientSecret",
+                            "value": "[parameters('relecloudInstrumentsClientSecret')]"
+                        },
+                        {
+                            "name": "EntraVerifiedId__ApiKey",
+                            "value": "[parameters('relecloudInstrumentsApiKey')]"
+                        },
+                        {
+                            "name": "RelecloudInstruments__VerifiedCredentialIssuer",
+                            "value": "[parameters('contosoMusiversityDidAuthority')]"
+                        }
+                    ],
+                    "linuxFxVersion": "DOCKER|ghcr.io/jelledruyts/relecloudinstruments:latest"
+                }
+            }
+        }
+    ]
+}

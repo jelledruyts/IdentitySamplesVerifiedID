@@ -10,6 +10,7 @@
         document.getElementById('responsePanel').style.display = 'none';
     }
 
+    var checkStatus = null;
     function sendPresentationRequest(type) {
         // Send a presentation request.
         fetch('api/presentation/request?type=' + type, { method: 'POST' }).then(response => {
@@ -28,7 +29,10 @@
 
                     // Start polling the status of the request, as callback messages should arrive
                     // back from the Verifiable Credentials Service.
-                    var checkStatus = setInterval(() => {
+                    if (checkStatus) {
+                        clearInterval(checkStatus);
+                    }
+                    checkStatus = setInterval(() => {
                         fetch('api/presentation/status?requestId=' + requestResponseBody.requestId).then(response => {
                             if (!response.ok) {
                                 // Something went wrong while polling, show an error message.

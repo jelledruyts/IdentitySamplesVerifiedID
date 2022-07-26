@@ -10,8 +10,7 @@
         document.getElementById('responsePanel').style.display = 'none';
     }
 
-    var logInButton = document.getElementById('logIn');
-    logInButton.addEventListener('click', () => {
+    document.getElementById('logIn').addEventListener('click', () => {
         authService.login().then(account => {
             document.getElementById('userName').innerText = account.name;
             document.getElementById('userEmail').innerText = account.username;
@@ -22,6 +21,7 @@
         });
     });
 
+    var checkStatus = null;
     document.getElementById('issueCredential').addEventListener('click', () => {
         authService.getAccessToken().then(accessToken => {
             // Send an issuance request.
@@ -37,7 +37,7 @@
                 body: JSON.stringify(data)
             }).then(response => {
                 if (!response.ok) {
-                    // Something went wrong while sending the presentation request, show an error message.
+                    // Something went wrong while sending the issuance request, show an error message.
                     showApiError(response);
                 } else {
                     // The issuance request was successful, show the response.
@@ -57,7 +57,10 @@
 
                         // Start polling the status of the request, as callback messages should arrive
                         // back from the Verifiable Credentials Service.
-                        var checkStatus = setInterval(() => {
+                        if (checkStatus) {
+                            clearInterval(checkStatus);
+                        }
+                        checkStatus = setInterval(() => {
                             authService.getAccessToken().then(accessToken => {
                                 fetch('api/issuance/status?requestId=' + requestResponseBody.requestId, {
                                     headers: {
