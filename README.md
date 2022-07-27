@@ -10,11 +10,11 @@ This sample uses [Microsoft Entra Verified ID](https://docs.microsoft.com/azure/
 
 The Contoso Musiversity website allows a user of the organization to sign in, and on their user profile page they can then **issue a verifiable credential** to their wallet application:
 
-![Contoso Musiversity issues a verified credential](xmedia/contoso-issue.png)
+![Contoso Musiversity issues a verified credential](media/contoso-issue.png)
 
 The Relecloud Instruments e-commerce store allows any verified student or staff to **present their credential** and receive a discount:
 
-![Relecloud Instruments verifies a verified credential](xmedia/relecloud-verify.png)
+![Relecloud Instruments verifies a verified credential](media/relecloud-verify.png)
 
 ## Setup
 
