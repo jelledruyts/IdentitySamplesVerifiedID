@@ -68,12 +68,15 @@ public class IssuanceController : ControllerBase
             // The Verified Student credential uses the id_token_hint flow, which means the application
             // that requests the issuance must send the claims to include in the verifiable credential.
             claims = new Dictionary<string, string>();
-            foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims)
+            if (!string.IsNullOrWhiteSpace(this.appConfiguration.VerifiedCredentialInputClaims))
             {
-                var userClaim = this.User.Claims.FirstOrDefault(c => string.Equals(c.Type, verifiedCredentialInputClaim, StringComparison.OrdinalIgnoreCase));
-                if (userClaim != null)
+                foreach (var verifiedCredentialInputClaim in this.appConfiguration.VerifiedCredentialInputClaims.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 {
-                    claims[verifiedCredentialInputClaim] = userClaim.Value;
+                    var userClaim = this.User.Claims.FirstOrDefault(c => string.Equals(c.Type, verifiedCredentialInputClaim, StringComparison.OrdinalIgnoreCase));
+                    if (userClaim != null)
+                    {
+                        claims[verifiedCredentialInputClaim] = userClaim.Value;
+                    }
                 }
             }
 

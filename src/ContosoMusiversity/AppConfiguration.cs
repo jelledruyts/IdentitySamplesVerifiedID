@@ -6,5 +6,5 @@ public class AppConfiguration
     public string? StudentCredentialType { get; set; }
     public string? StaffAppRoleName { get; set; }
     public string? StaffCredentialType { get; set; }
-    public IList<string> VerifiedCredentialInputClaims { get; set; } = new List<string>();
+    public string? VerifiedCredentialInputClaims { get; set; }
 }
