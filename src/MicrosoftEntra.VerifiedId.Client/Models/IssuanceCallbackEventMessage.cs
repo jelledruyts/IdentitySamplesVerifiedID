@@ -16,5 +16,5 @@ public class IssuanceCallbackEventMessage : BaseCallbackEventMessage
     /// <summary>
     /// When the code property value is "issuance_error", this property contains information about the error.
     /// </summary>
-    public ErrorDetail? Error { get; set; }
+    public Error? Error { get; set; }
 }

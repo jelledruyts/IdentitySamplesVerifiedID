@@ -114,12 +114,12 @@ public abstract class BaseRequestClient
         {
             // Throw a specific exception in case there was a service-level error.
             errorMessage += $" Request ID: \"{errorResponse.RequestId}\". {errorResponse.Error.GetErrorMessage()}";
+            this.logger.LogError(errorMessage);
+            throw new VerifiedIdException(errorResponse, errorMessage);
         }
-        else
-        {
-            // Throw default exception in case of other failures.
-            errorMessage += " " + errorContent;
-        }
+
+        // Throw default exception in case of other failures.
+        errorMessage += " " + errorContent;
         this.logger.LogError(errorMessage);
         throw new HttpRequestException(errorMessage);
     }

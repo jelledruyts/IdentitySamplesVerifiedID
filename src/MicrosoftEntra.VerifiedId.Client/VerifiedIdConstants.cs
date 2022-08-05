@@ -78,4 +78,32 @@ public static class VerifiedIdConstants
         /// </summary>
         public const string VerifiablePresentation = "VerifiablePresentation";
     }
+
+    public static class InnerErrorCodes
+    {
+        /// <summary>
+        /// Returned when validation issues on the request occur.
+        /// The target field contains the field in the request that is causing the issue.
+        /// </summary>
+        public const string BadOrMissingField = "badOrMissingField";
+
+        /// <summary>
+        /// Returned when a resource the client is requesting isn't found.
+        /// The target field contains the resource name/id that isn't found.
+        /// </summary>
+        public const string NotFound = "notFound";
+
+        /// <summary>
+        /// Returned for any validation issues on tokens like JWT and the likes.
+        /// The target field contains the token name causing the issue, when applicable.
+        /// </summary>
+        public const string TokenError = "tokenError";
+
+        /// <summary>
+        /// Returned for all the cases where the client might be able to get a successful response
+        /// if they retry the request at a later stage. A common example of when this code is
+        /// returned is when an HTTP 429 code is returned back.
+        /// </summary>
+        public const string TransientError = "transientError";
+    }
 }

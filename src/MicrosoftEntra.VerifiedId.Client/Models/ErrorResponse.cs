@@ -16,7 +16,12 @@ public class ErrorResponse
     public string? Date { get; set; }
 
     /// <summary>
-    /// Further details about the error.
+    /// Internal Microsoft code.
     /// </summary>
-    public ErrorDetail? Error { get; set; }
+    public string? Mscv { get; set; }
+
+    /// <summary>
+    /// The outer error object.
+    /// </summary>
+    public Error? Error { get; set; }
 }

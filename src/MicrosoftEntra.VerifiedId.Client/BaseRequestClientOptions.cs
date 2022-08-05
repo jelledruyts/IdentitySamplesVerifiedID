@@ -4,9 +4,8 @@ public abstract class BaseRequestClientOptions
 {
     /// <summary>
     /// The instance or API endpoint for the Verifiable Credentials Service.
-    /// For Europe, use "https://beta.eu.did.msidentity.com/v1.0/".
     /// </summary>
-    public string? DidInstance { get; set; } = "https://beta.did.msidentity.com/v1.0/";
+    public string? DidInstance { get; set; } = "https://verifiedid.did.msidentity.com/v1.0";
 
     /// <summary>
     /// The Decentralized Identifier (DID) of the issuer.
