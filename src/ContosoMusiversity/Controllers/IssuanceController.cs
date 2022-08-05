@@ -100,7 +100,7 @@ public class IssuanceController : ControllerBase
     [HttpPost("api/issuance/callback")]
     public async Task<IActionResult> IssuanceCallback(IssuanceCallbackEventMessage message)
     {
-        this.logger.LogInformation($"Issuance callback received for request \"{message.RequestId}\": {message.Code}");
+        this.logger.LogInformation($"Issuance callback received for request \"{message.RequestId}\": {message.RequestStatus}");
 
         // Validate the callback request (e.g. if an API key was configured).
         if (!this.requestClient.ValidateCallbackRequest(this.Request))
@@ -144,7 +144,7 @@ public class IssuanceController : ControllerBase
                 // If the credential was successfully issued, return the credential details to the client.
                 return Ok(new IssuanceStatus
                 {
-                    Status = cachedMessage.Code,
+                    Status = cachedMessage.RequestStatus,
                     Message = cachedMessage.Error?.Message
                 });
             }

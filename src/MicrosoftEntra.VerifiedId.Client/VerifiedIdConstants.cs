@@ -39,7 +39,7 @@ public static class VerifiedIdConstants
         public const string Authorization = "Authorization";
     }
 
-    public static class CallbackCodes
+    public static class CallbackRequestStatusCodes
     {
         /// <summary>
         /// The user scanned the QR code or selected the link that starts the issuance or presentation flow.

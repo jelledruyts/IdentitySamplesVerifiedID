@@ -9,11 +9,11 @@ namespace MicrosoftEntra.VerifiedId.Client.Models;
 public class PresentationCallbackEventMessage : BaseCallbackEventMessage
 {
     /// <summary>
-    /// The code returned when the request has an error. Possible values:
+    /// The status of the request. Possible values:
     /// "request_retrieved": The user scanned the QR code or selected the link that starts the presentation flow.
     /// "presentation_verified": The verifiable credential validation completed successfully.
     /// </summary>
-    public string? Code { get; set; }
+    public string? RequestStatus { get; set; }
 
     /// <summary>
     /// The verifiable credential user DID.
@@ -23,7 +23,7 @@ public class PresentationCallbackEventMessage : BaseCallbackEventMessage
     /// <summary>
     /// Returns an array of verifiable credentials requested.
     /// </summary>
-    public IList<IssuedCredential> Issuers { get; set; } = new List<IssuedCredential>();
+    public IList<IssuedCredential> VerifiedCredentialsData { get; set; } = new List<IssuedCredential>();
 
     /// <summary>
     /// Optional. The receipt contains the original payload sent from the wallet to the Verifiable Credentials service.

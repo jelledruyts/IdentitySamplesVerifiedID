@@ -55,7 +55,7 @@ public class PresentationController : ControllerBase
     [HttpPost("api/presentation/callback")]
     public async Task<IActionResult> PresentationCallback(PresentationCallbackEventMessage message)
     {
-        this.logger.LogInformation($"Presentation callback received for request \"{message.RequestId}\": {message.Code}");
+        this.logger.LogInformation($"Presentation callback received for request \"{message.RequestId}\": {message.RequestStatus}");
 
         // Validate the callback request (e.g. if an API key was configured).
         if (!this.requestClient.ValidateCallbackRequest(this.Request))
@@ -83,10 +83,10 @@ public class PresentationController : ControllerBase
             if (cachedMessage != null)
             {
                 var message = default(string);
-                if (string.Equals(cachedMessage.Code, VerifiedIdConstants.CallbackCodes.PresentationVerified, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(cachedMessage.RequestStatus, VerifiedIdConstants.CallbackRequestStatusCodes.PresentationVerified, StringComparison.OrdinalIgnoreCase))
                 {
                     // If the presentation was successfully verified, determine the discount based on the credential type.
-                    var credentialTypes = cachedMessage.Issuers.SelectMany(i => i.Type).ToArray();
+                    var credentialTypes = cachedMessage.VerifiedCredentialsData.SelectMany(i => i.Type).ToArray();
                     if (credentialTypes.Any(t => string.Equals(t, this.appConfiguration.StaffCredentialType, StringComparison.OrdinalIgnoreCase)))
                     {
                         // Staff get 7% discount.
@@ -104,7 +104,7 @@ public class PresentationController : ControllerBase
                 }
                 return new PresentationStatus
                 {
-                    Status = cachedMessage.Code,
+                    Status = cachedMessage.RequestStatus,
                     Message = message
                 };
             }

@@ -19,15 +19,18 @@ public class IssuanceRequestClient : BaseRequestClient
         this.options = options;
     }
 
+    public override string GetRequestUrl()
+    {
+        return GetApiUrl("verifiableCredentials/createIssuanceRequest");
+    }
+
     public IssuanceRequestContext GetIssuanceRequest(string credentialType, string callbackUrl, IDictionary<string, string>? claims = null, string? callbackState = null, bool? includeQRCode = null, int? pinLength = null)
     {
         var request = base.GetRequest<IssuanceRequest>(callbackUrl, callbackState, includeQRCode);
-        request.Issuance = new Issuance
-        {
-            Type = credentialType,
-            Manifest = GetManifestUrl(credentialType),
-            Claims = claims
-        };
+        request.Type = credentialType;
+        request.Manifest = GetManifestUrl(credentialType);
+        request.Claims = claims;
+
         var context = new IssuanceRequestContext(request);
 
         // Check if a PIN was either explicitly requested or otherwise statically configured.
@@ -37,7 +40,7 @@ public class IssuanceRequestClient : BaseRequestClient
             var pinValue = RandomNumberGenerator.GetInt32(1, (int)Math.Pow(10, requestedPinLength));
             var pinValueString = string.Format("{0:D" + requestedPinLength + "}", pinValue);
             context.PinValue = pinValueString;
-            request.Issuance.Pin = new Pin
+            request.Pin = new Pin
             {
                 Length = requestedPinLength,
                 Value = pinValueString

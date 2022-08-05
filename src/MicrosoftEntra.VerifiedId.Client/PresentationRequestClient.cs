@@ -17,23 +17,25 @@ public class PresentationRequestClient : BaseRequestClient
         this.options = options;
     }
 
+    public override string GetRequestUrl()
+    {
+        return GetApiUrl("verifiableCredentials/createPresentationRequest");
+    }
+
     public PresentationRequest GetPresentationRequest(string callbackUrl, string? callbackState = null, bool? includeQRCode = null, IList<RequestedCredential>? requestedCredentials = null)
     {
         var request = base.GetRequest<PresentationRequest>(callbackUrl, callbackState, includeQRCode);
-        request.Presentation = new Presentation
-        {
-            IncludeReceipt = this.options.IncludeReceipt,
-        };
+        request.IncludeReceipt = this.options.IncludeReceipt;
 
         // Set the requested credentials from configuration.
-        request.Presentation.RequestedCredentials = new List<RequestedCredential>(this.options.RequestedCredentials);
+        request.RequestedCredentials = new List<RequestedCredential>(this.options.RequestedCredentials);
 
         // Add explicitly requested credentials, if any.
         if (requestedCredentials != null)
         {
             foreach (var requestedCredential in requestedCredentials)
             {
-                request.Presentation.RequestedCredentials.Add(requestedCredential);
+                request.RequestedCredentials.Add(requestedCredential);
             }
         }
 

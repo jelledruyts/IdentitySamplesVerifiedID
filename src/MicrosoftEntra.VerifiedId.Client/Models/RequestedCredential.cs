@@ -23,4 +23,9 @@ public class RequestedCredential
     /// that subjects can present.
     /// </summary>
     public IList<string> AcceptedIssuers { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Optional settings for presentation validation.
+    /// </summary>
+    public RequestedCredentialConfiguration? Configuration { get; set; }
 }

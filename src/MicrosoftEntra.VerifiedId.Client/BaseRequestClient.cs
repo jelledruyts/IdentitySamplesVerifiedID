@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
@@ -37,13 +37,13 @@ public abstract class BaseRequestClient
 
     public string GetManifestUrl(string credentialType)
     {
-        return GetApiUrl("verifiableCredential/contracts/" + HttpUtility.UrlPathEncode(credentialType));
+        ArgumentNullException.ThrowIfNull(this.options.TenantId);
+        // The contract identifier is the Base64 encoding of the concatenated tenant ID and credential type.
+        var contractId = Convert.ToBase64String(Encoding.UTF8.GetBytes(this.options.TenantId.ToLowerInvariant() + credentialType.ToLowerInvariant())).TrimEnd('=');
+        return GetApiUrl($"tenants/{this.options.TenantId}/verifiableCredentials/contracts/{contractId}/manifest");
     }
 
-    public string GetRequestUrl()
-    {
-        return GetApiUrl("verifiablecredentials/request");
-    }
+    public abstract string GetRequestUrl();
 
     public bool ValidateCallbackRequest(HttpRequest request)
     {
@@ -130,10 +130,9 @@ public abstract class BaseRequestClient
         return new AuthenticationHeaderValue(token.TokenType, token.AccessToken);
     }
 
-    private string GetApiUrl(string api)
+    protected string GetApiUrl(string api)
     {
         ArgumentNullException.ThrowIfNull(this.options.DidInstance);
-        ArgumentNullException.ThrowIfNull(this.options.TenantId);
-        return $"{this.options.DidInstance.TrimEnd('/')}/{this.options.TenantId}/{api}";
+        return $"{this.options.DidInstance.TrimEnd('/')}/{api}";
     }
 }
