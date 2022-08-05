@@ -106,4 +106,24 @@ public static class VerifiedIdConstants
         /// </summary>
         public const string TransientError = "transientError";
     }
+
+    public static class CallbackErrorCodes
+    {
+        /// <summary>
+        /// Unable to fetch the verifiable credential contract.
+        /// This error usually happens when the API can't fetch the manifest you specify in the request payload.
+        /// </summary>
+        public const string FetchContractError = "fetch_contract_error";
+
+        /// <summary>
+        /// The Verifiable Credentials service isn't able to validate requirements,
+        /// or something went wrong in Verifiable Credentials.
+        /// </summary>
+        public const string IssuanceServiceError = "issuance_service_error";
+
+        /// <summary>
+        /// This error is uncommon, but worth investigating.
+        /// </summary>
+        public const string UnspecifiedError = "unspecified_error";
+    }
 }
