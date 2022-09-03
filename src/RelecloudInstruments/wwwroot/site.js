@@ -48,12 +48,17 @@
                                         // The QR code was scanned, hide it.
                                         document.getElementById('scanPanel').style.display = 'none';
                                         statusMessage.innerText = 'Please share your verified credential with us.';
-                                    } else if (statusResponseBody.status == 'presentation_verified') {
+                                    } else if (statusResponseBody.status == 'presentation_verified' || statusResponseBody.status == 'presentation_error') {
                                         // Stop polling for changes.
                                         clearInterval(checkStatus);
 
-                                        // The verified credential was presented.
-                                        statusMessage.innerText = statusResponseBody.message;
+                                        if (statusResponseBody.status == 'presentation_error') {
+                                            // The verified credential could not be presented.
+                                            statusMessage.innerText = 'There was an error while sharing your verified credential; please ensure you selected the correct credential and that it hasn\'t expired yet.';
+                                        } else {
+                                            // The verified credential was presented.
+                                            statusMessage.innerText = statusResponseBody.message;
+                                        }
                                     }
                                 })
                             }

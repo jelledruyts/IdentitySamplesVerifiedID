@@ -60,6 +60,11 @@ public static class VerifiedIdConstants
         /// The verifiable credential validation completed successfully.
         /// </summary>
         public const string PresentationVerified = "presentation_verified";
+
+        /// <summary>
+        /// There was an error during presentation.
+        /// </summary>
+        public const string PresentationError = "presentation_error";
     }
 
     public static class CredentialTypes
