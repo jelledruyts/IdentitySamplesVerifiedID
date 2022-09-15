@@ -32,7 +32,7 @@ public class PresentationController : ControllerBase
     }
 
     [HttpPost("api/presentation/request")]
-    public async Task<PresentationApiResponse> PresentationRequest(string type)
+    public async Task<PresentationApiResponse> PresentationRequest()
     {
         ArgumentNullException.ThrowIfNull(this.appConfiguration.VerifiedCredentialIssuer);
 
@@ -40,11 +40,10 @@ public class PresentationController : ControllerBase
         var absoluteCallbackUrl = Url.Action(nameof(PresentationCallback), null, null, "https")!;
 
         // Send a presentation request to the Verifiable Credentials Service.
-        var credentialType = string.Equals(type, "staff", StringComparison.OrdinalIgnoreCase) ? this.appConfiguration.StaffCredentialType : this.appConfiguration.StudentCredentialType;
         var requestedCredential = new RequestedCredential
         {
-            Type = credentialType,
-            Purpose = $"Please prove that you have the \"{credentialType}\" credential.",
+            Type = VerifiedIdConstants.CredentialTypes.VerifiableCredential,
+            Purpose = "Please present a suitable verifiable credential.",
             AcceptedIssuers = new[] { this.appConfiguration.VerifiedCredentialIssuer }
         };
         var response = await this.requestClient.RequestPresentationAsync(absoluteCallbackUrl, includeQRCode: true, requestedCredentials: new[] { requestedCredential });

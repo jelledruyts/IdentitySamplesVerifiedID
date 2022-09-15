@@ -11,9 +11,9 @@
     }
 
     var checkStatus = null;
-    function sendPresentationRequest(type) {
+    function sendPresentationRequest() {
         // Send a presentation request.
-        fetch('api/presentation/request?type=' + type, { method: 'POST' }).then(response => {
+        fetch('api/presentation/request', { method: 'POST' }).then(response => {
             if (!response.ok) {
                 // Something went wrong while sending the presentation request, show an error message.
                 showApiError(response);
@@ -73,11 +73,7 @@
         });
     }
 
-    document.getElementById('presentStudentCredential').addEventListener('click', () => {
-        sendPresentationRequest('student');
-    });
-
-    document.getElementById('presentStaffCredential').addEventListener('click', () => {
-        sendPresentationRequest('staff');
+    document.getElementById('presentVerifiedCredential').addEventListener('click', () => {
+        sendPresentationRequest();
     });
 })();
